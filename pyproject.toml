@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "graphlens"
+name = "graphnet_benchmark"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
@@ -24,34 +24,39 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = [
+  "torch==2.6",
+  "torch_geometric==2.6",
+  "networkx==3.4.2",
+  "pandas==2.2.3"
+]
 
 [project.urls]
-Documentation = "https://github.com/kleyt0n/graphlens#readme"
-Issues = "https://github.com/kleyt0n/graphlens/issues"
-Source = "https://github.com/kleyt0n/graphlens"
+Documentation = "https://github.com/kleyt0n/graphnet#readme"
+Issues = "https://github.com/kleyt0n/graphnet/issues"
+Source = "https://github.com/kleyt0n/graphnet"
 
 [tool.hatch.version]
-path = "src/graphlens/__about__.py"
+path = "src/graphnet/__about__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
   "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/graphlens tests}"
+check = "mypy --install-types --non-interactive {args:src/graphnet tests}"
 
 [tool.coverage.run]
-source_pkgs = ["graphlens", "tests"]
+source_pkgs = ["graphnet", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/graphlens/__about__.py",
+  "src/graphnet/__about__.py",
 ]
 
 [tool.coverage.paths]
-graphlens = ["src/graphlens", "*/graphlens/src/graphlens"]
-tests = ["tests", "*/graphlens/tests"]
+graphnet = ["src/graphnet", "*/graphnet/src/graphnet"]
+tests = ["tests", "*/graphnet/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -59,3 +64,20 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.ruff]
+extend = "ruff_default.toml"
+exclude = ["docs/**", "tests/**", "tutorials/**"]
+
+paths = ["./src"]
+
+[tool.hatch.envs.testing.scripts]
+run = ["python -m pytest"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/docs",
+]
+[tool.hatch.envs.default]
+env-vars = { PYTHONPATH = "src" }

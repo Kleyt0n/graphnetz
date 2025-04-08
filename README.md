@@ -1,1 +1,1 @@
-# graphlens: learning and evaluation in network structures
+# GraphNet: A Large-Scale Database for Graph Learning Benchmark
