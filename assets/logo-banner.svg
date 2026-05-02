@@ -1,29 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 220" width="700" height="220" role="img" aria-label="GraphNetz">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 96" width="460" height="96" role="img" aria-label="GraphNetz">
   <title>GraphNetz</title>
-  <!-- White background -->
-  <rect x="0" y="0" width="700" height="220" fill="#FFFFFF"/>
-  <!-- Mark: same 6+1 hexagonal graph as logo.svg -->
-  <g transform="translate(0,0)">
-    <g stroke="#22333B" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="110" y1="35"   x2="110" y2="185"/>
-      <line x1="45"  y1="72.5" x2="175" y2="147.5"/>
-      <line x1="45"  y1="147.5" x2="175" y2="72.5"/>
-      <polygon points="110,35 175,72.5 175,147.5 110,185 45,147.5 45,72.5"/>
+  <rect x="0" y="0" width="460" height="96" fill="#FFFFFF"/>
+  <!-- Mark: 6+1 hexagonal graph, sized so its bounding height (2*r = 68)
+       equals the title font-size. Vertical translate=46 is calibrated to
+       the *real* rendered text bounds in Helvetica/Arial (cap-top ~y=15,
+       descender end ~y=77, ink centre ~y=46), so logo and wordmark share
+       the same vertical centre. The pair is also centred horizontally
+       within the 460-wide viewBox (measured ink extent ~25..435). -->
+  <g transform="translate(58, 46)">
+    <g stroke="#22333B" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="0" y1="-34" x2="0" y2="34"/>
+      <line x1="-29.44" y1="-17" x2="29.44" y2="17"/>
+      <line x1="-29.44" y1="17" x2="29.44" y2="-17"/>
+      <polygon points="0,-34 29.44,-17 29.44,17 0,34 -29.44,17 -29.44,-17"/>
     </g>
     <g fill="#22333B">
-      <circle cx="110" cy="35"    r="7.2"/>
-      <circle cx="175" cy="72.5"  r="7.2"/>
-      <circle cx="175" cy="147.5" r="7.2"/>
-      <circle cx="110" cy="185"   r="7.2"/>
-      <circle cx="45"  cy="147.5" r="7.2"/>
-      <circle cx="45"  cy="72.5"  r="7.2"/>
+      <circle cx="0" cy="-34" r="3.27"/>
+      <circle cx="29.44" cy="-17" r="3.27"/>
+      <circle cx="29.44" cy="17" r="3.27"/>
+      <circle cx="0" cy="34" r="3.27"/>
+      <circle cx="-29.44" cy="17" r="3.27"/>
+      <circle cx="-29.44" cy="-17" r="3.27"/>
     </g>
-    <circle cx="110" cy="110" r="9.5" fill="#FFFFFF" stroke="#22333B" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="4.3" fill="#FFFFFF" stroke="#22333B" stroke-width="2"/>
   </g>
   <!-- Wordmark -->
-  <g transform="translate(230, 0)" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
-    <text x="0" y="120" font-size="68" font-weight="600" fill="#22333B" letter-spacing="-1.5">GraphNetz</text>
-    <text x="2" y="152" font-size="16" font-weight="400" fill="#5E503F" letter-spacing="0.6">Making Statistical Rigor the Default</text>
-    <text x="2" y="175" font-size="16" font-weight="400" fill="#5E503F" letter-spacing="0.6">in Graph Neural Network Benchmarks</text>
+  <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+    <text x="108" y="65" font-size="68" font-weight="600" fill="#22333B" letter-spacing="-1.5">GraphNetz</text>
   </g>
 </svg>

@@ -1,20 +1,21 @@
-![GraphNetz](assets/logo-banner.png)
+<p align="center">
+  <img src="assets/logo-banner.svg" alt="GraphNetz" width="460">
+</p>
 
-*Statistically rigorous GNN benchmarking*
+<p align="center"><em>Statistically rigorous GNN benchmarking</em></p>
 
-[![Build](https://img.shields.io/badge/build-passing-22333B?style=flat-square&labelColor=EAE0D5)](https://github.com/kleyt0n/graphnet/actions)
-[![Python](https://img.shields.io/badge/python-3.10%2B-22333B?style=flat-square&labelColor=EAE0D5)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-22333B?style=flat-square&labelColor=EAE0D5)](LICENCE.txt)
-[![Paper](https://img.shields.io/badge/paper-PDF-22333B?style=flat-square&labelColor=EAE0D5)](paper/main.pdf)
+<p align="center">
+  <a href="https://github.com/kleyt0n/graphnet/actions"><img alt="Build" src="https://img.shields.io/badge/build-passing-22333B?style=flat-square&labelColor=EAE0D5"></a>
+  <a href="https://www.python.org/downloads/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-22333B?style=flat-square&labelColor=EAE0D5"></a>
+  <a href="LICENCE.txt"><img alt="License" src="https://img.shields.io/badge/license-MIT-22333B?style=flat-square&labelColor=EAE0D5"></a>
+  <a href="https://arxiv.org/"><img alt="Paper" src="https://img.shields.io/badge/paper-PDF-22333B?style=flat-square&labelColor=EAE0D5"></a>
+</p>
 
 ---
 
 ## Why GraphNetz
 
-Most GNN benchmarks report point-estimate accuracies on a handful of citation
-graphs and declare a winner without confidence intervals, multiple-comparison
-correction, or rank aggregation across datasets. GraphNetz's default output is
-a **structured statistical report**, not a raw accuracy table:
+Most GNN benchmarks report point-estimate accuracies on a handful of citation graphs and declare a winner without confidence intervals, multiple-comparison correction, or rank aggregation across datasets. GraphNetz's default output is a **structured statistical report**, not a raw accuracy table:
 
 - multi-seed Student's *t* confidence intervals per cell,
 - Holm–Bonferroni paired *t*-tests (or Wilcoxon signed-rank) within each task,
