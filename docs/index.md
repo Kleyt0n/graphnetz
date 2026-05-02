@@ -4,7 +4,7 @@ hide-toc: true
 
 # GraphNetz
 
-**A benchmark whose default output is a statistical report — not a leaderboard.**
+**A benchmark whose default output is a statistical report, not a leaderboard.**
 
 GraphNetz turns the standard "train, eval, table of accuracies" loop into a
 reproducible pipeline that always produces the artefacts a reviewer would
