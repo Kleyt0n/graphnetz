@@ -1,2 +1,32 @@
-/playground
-*/data
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+build/
+dist/
+paper/
+.claude
+
+# uv / venv
+.venv/
+.python-version
+
+# Project
+/playground/
+**/data/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Sphinx
+docs/_build/
+docs/api/_autosummary/
+
+# Editors
+.vscode/
+.idea/
+.DS_Store

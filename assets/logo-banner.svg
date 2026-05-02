@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 220" width="700" height="220" role="img" aria-label="GraphNetz">
+  <title>GraphNetz</title>
+  <!-- White background -->
+  <rect x="0" y="0" width="700" height="220" fill="#FFFFFF"/>
+  <!-- Mark: same 6+1 hexagonal graph as logo.svg -->
+  <g transform="translate(0,0)">
+    <g stroke="#22333B" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="110" y1="35"   x2="110" y2="185"/>
+      <line x1="45"  y1="72.5" x2="175" y2="147.5"/>
+      <line x1="45"  y1="147.5" x2="175" y2="72.5"/>
+      <polygon points="110,35 175,72.5 175,147.5 110,185 45,147.5 45,72.5"/>
+    </g>
+    <g fill="#22333B">
+      <circle cx="110" cy="35"    r="7.2"/>
+      <circle cx="175" cy="72.5"  r="7.2"/>
+      <circle cx="175" cy="147.5" r="7.2"/>
+      <circle cx="110" cy="185"   r="7.2"/>
+      <circle cx="45"  cy="147.5" r="7.2"/>
+      <circle cx="45"  cy="72.5"  r="7.2"/>
+    </g>
+    <circle cx="110" cy="110" r="9.5" fill="#FFFFFF" stroke="#22333B" stroke-width="2.5"/>
+  </g>
+  <!-- Wordmark -->
+  <g transform="translate(230, 0)" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+    <text x="0" y="120" font-size="68" font-weight="600" fill="#22333B" letter-spacing="-1.5">GraphNetz</text>
+    <text x="2" y="152" font-size="16" font-weight="400" fill="#5E503F" letter-spacing="0.6">Making Statistical Rigor the Default</text>
+    <text x="2" y="175" font-size="16" font-weight="400" fill="#5E503F" letter-spacing="0.6">in Graph Neural Network Benchmarks</text>
+  </g>
+</svg>
