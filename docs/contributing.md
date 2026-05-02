@@ -23,7 +23,7 @@ loaders and architectures are welcome; new evaluation shortcuts are not.
 ## Quick development loop
 
 ```bash
-git clone https://github.com/kleyt0n/graphnetz
+git clone https://github.com/quant-sci/graphnetz
 cd graphnetz
 uv sync --group dev
 uv run pytest          # smoke tests

@@ -41,7 +41,7 @@ citation graphs, molecular regression, or knowledge-graph link prediction.
 | **Architectures** | GCN · GAT · GIN · GraphSAGE · GraphTransformer (DGI as a pre-training utility) |
 | **Loaders** | 58 across 10 categories (combinatorial, biology, social, knowledge, infrastructure, finance, computing, vision, physics, security) |
 | **Default report** | per-cell mean ± Student's *t*-CI · Holm-adjusted paired *t* · Demšar/Nemenyi CD |
-| **Source** | [github.com/kleyt0n/graphnetz](https://github.com/kleyt0n/graphnetz) |
+| **Source** | [github.com/quant-sci/graphnetz](https://github.com/quant-sci/graphnetz) |
 
 ## Where to next
 

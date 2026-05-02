@@ -40,9 +40,9 @@ chem = ["rdkit>=2023.9"]
 ogb = ["ogb>=1.3"]
 
 [project.urls]
-Documentation = "https://github.com/kleyt0n/graphnetz#readme"
-Issues = "https://github.com/kleyt0n/graphnetz/issues"
-Source = "https://github.com/kleyt0n/graphnetz"
+Documentation = "https://github.com/quant-sci/graphnetz#readme"
+Issues = "https://github.com/quant-sci/graphnetz/issues"
+Source = "https://github.com/quant-sci/graphnetz"
 
 [dependency-groups]
 dev = [

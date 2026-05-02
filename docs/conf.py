@@ -106,7 +106,7 @@ html_css_files = ["custom.css"]
 
 html_theme_options = {
     "logo": "logo.svg",
-    "github_user": "kleyt0n",
+    "github_user": "quant-sci",
     "github_repo": "graphnet",
     "github_button": True,
     "github_type": "star",
