@@ -58,6 +58,30 @@ autodoc_default_options = {
     "show-inheritance": True,
     "member-order": "bysource",
 }
+# Mock heavy runtime deps so Sphinx (e.g. on Read-the-Docs) can introspect
+# the API without pulling in the full ML stack -- a torch / torch-geometric
+# install would OOM the RTD free tier and contributes nothing to the
+# rendered API reference. Anything imported by ``graphnetz`` modules at
+# module-load time goes here.
+autodoc_mock_imports = [
+    "torch",
+    "torch_geometric",
+    "torch_scatter",
+    "torch_sparse",
+    "torch_cluster",
+    "torch_spline_conv",
+    "numpy",
+    "scipy",
+    "sklearn",
+    "networkx",
+    "pandas",
+    "matplotlib",
+    "cycler",
+    "tqdm",
+    "requests",
+    "ogb",
+    "rdkit",
+]
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 

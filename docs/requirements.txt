@@ -1,0 +1,9 @@
+# Read-the-Docs build dependencies. Heavy runtime deps (torch,
+# torch-geometric, scipy, sklearn, networkx, pandas, matplotlib) are
+# *not* installed here -- ``conf.py`` lists them in ``autodoc_mock_imports``
+# so Sphinx can introspect signatures without pulling in the full ML stack
+# (the RTD free tier would otherwise OOM on a torch wheel install).
+sphinx>=7.3
+myst-parser>=3.0
+sphinx-copybutton>=0.5
+linkify-it-py>=2.0
