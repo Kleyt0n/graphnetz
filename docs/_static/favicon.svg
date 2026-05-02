@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" width="220" height="220" role="img" aria-label="GraphNetz favicon">
+  <title>GraphNetz</title>
+  <!--
+    Same hexagonal 6+1 graph as logo.svg, but on an opaque white square so
+    the favicon reads cleanly in browser tabs regardless of the tab/theme
+    background colour. Rounded corners match common browser favicon
+    rendering so the icon does not appear to extend past the chrome's clip.
+  -->
+  <rect x="0" y="0" width="220" height="220" rx="28" ry="28" fill="#FFFFFF"/>
+  <g stroke="#22333B" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="110" y1="35"   x2="110" y2="185"/>
+    <line x1="45"  y1="72.5" x2="175" y2="147.5"/>
+    <line x1="45"  y1="147.5" x2="175" y2="72.5"/>
+    <polygon points="110,35 175,72.5 175,147.5 110,185 45,147.5 45,72.5"/>
+  </g>
+  <g fill="#22333B">
+    <circle cx="110" cy="35"    r="7.2"/>
+    <circle cx="175" cy="72.5"  r="7.2"/>
+    <circle cx="175" cy="147.5" r="7.2"/>
+    <circle cx="110" cy="185"   r="7.2"/>
+    <circle cx="45"  cy="147.5" r="7.2"/>
+    <circle cx="45"  cy="72.5"  r="7.2"/>
+  </g>
+  <circle cx="110" cy="110" r="9.5" fill="#FFFFFF" stroke="#22333B" stroke-width="2.5"/>
+</svg>

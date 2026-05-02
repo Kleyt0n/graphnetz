@@ -76,7 +76,7 @@ intersphinx_mapping = {
 # --------------------------------------------------------------------------- #
 html_theme = "alabaster"
 html_title = "GraphNetz"
-html_favicon = "_static/logo.svg"
+html_favicon = "_static/favicon.svg"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 
