@@ -21,8 +21,8 @@ uv sync --group dev
 ```
 
 Requires **Python ≥ 3.10**, **PyTorch ≥ 2.6**, and **torch-geometric ≥ 2.6**.
-Optional extras: `graphnetz[ogb]` for OGB loaders, `graphnetz[chem]` for
-RDKit-backed cheminformatics datasets.
+Optional extras: `graphnetz[ogb]` for OGB loaders, `graphnetz[chem]` to
+pull in RDKit (required by OGB molecular loaders such as `ogbg-molhiv`).
 
 ## Train one model
 
