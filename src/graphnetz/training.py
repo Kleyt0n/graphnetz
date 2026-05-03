@@ -2,6 +2,10 @@
 
 Each function returns a plain ``dict`` of per-epoch metrics, ready to feed into
 :func:`graphnetz.plotting.plot_history`.
+
+All trainers accept ``device='auto'`` (the default), which dispatches to
+CUDA when available, then Apple-silicon MPS, then CPU. Pass an explicit
+``torch.device`` or string to pin placement.
 """
 
 from __future__ import annotations
@@ -15,6 +19,22 @@ from torch_geometric.data import Data
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import degree
 from tqdm.auto import tqdm
+
+
+def _resolve_device(device: torch.device | str | None) -> torch.device:
+    """Resolve ``'auto'`` (or ``None``) to the best available device.
+
+    Order of preference: CUDA, then Apple-silicon MPS, then CPU. An
+    explicit ``torch.device`` or string is returned unchanged (after
+    ``torch.device(...)`` normalisation).
+    """
+    if device is None or device == "auto":
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+    return torch.device(device) if not isinstance(device, torch.device) else device
 
 
 @runtime_checkable
@@ -69,8 +89,12 @@ def train_node_classification(
     lr: float = 1e-2,
     weight_decay: float = 5e-4,
     verbose: bool = False,
+    device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
     """Train a node classifier with Planetoid-style train/val/test masks."""
+    dev = _resolve_device(device)
+    model = model.to(dev)
+    data = data.to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     history: dict[str, list[float]] = {"train_loss": [], "val_acc": [], "test_acc": []}
     train_mask = _select_split_mask(data.train_mask)
@@ -109,6 +133,7 @@ def train_graph_classification(
     epochs: int = 30,
     lr: float = 1e-3,
     verbose: bool = False,
+    device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
     """Train a graph-level classifier.
 
@@ -118,6 +143,8 @@ def train_graph_classification(
     binary cross-entropy with logits and the reported metric is the
     average correctly-classified label fraction.
     """
+    dev = _resolve_device(device)
+    model = model.to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     history: dict[str, list[float]] = {"train_loss": [], "val_acc": []}
 
@@ -134,6 +161,7 @@ def train_graph_classification(
         total = 0.0
         n = 0
         for batch in train_loader:
+            batch = batch.to(dev)
             opt.zero_grad()
             out = model(batch)
             if multi_label:
@@ -150,6 +178,7 @@ def train_graph_classification(
         m = 0
         with torch.no_grad():
             for batch in val_loader:
+                batch = batch.to(dev)
                 if multi_label:
                     pred = (model(batch) > 0).float()
                     correct += (pred == batch.y.float()).float().mean().item() * batch.num_graphs
@@ -173,8 +202,11 @@ def train_graph_regression(
     epochs: int = 30,
     lr: float = 1e-3,
     verbose: bool = False,
+    device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
     """Train a graph-level regressor (MSE loss, MAE on val)."""
+    dev = _resolve_device(device)
+    model = model.to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     history: dict[str, list[float]] = {"train_loss": [], "val_mae": []}
     iterator = tqdm(range(epochs), desc="Epochs", leave=False, disable=not verbose)
@@ -183,6 +215,7 @@ def train_graph_regression(
         total = 0.0
         n = 0
         for batch in train_loader:
+            batch = batch.to(dev)
             opt.zero_grad()
             out = model(batch).view(-1)
             loss = F.mse_loss(out, batch.y.float().view(-1))
@@ -196,6 +229,7 @@ def train_graph_regression(
         m = 0
         with torch.no_grad():
             for batch in val_loader:
+                batch = batch.to(dev)
                 out = model(batch).view(-1)
                 mae += (out - batch.y.float().view(-1)).abs().sum().item()
                 m += batch.num_graphs
@@ -214,8 +248,12 @@ def train_node_degree_regression(
     epochs: int = 100,
     lr: float = 1e-2,
     verbose: bool = False,
+    device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
     """Self-supervised node-level regression: predict log node degree."""
+    dev = _resolve_device(device)
+    model = model.to(dev)
+    data = data.to(dev)
     target = torch.log1p(degree(data.edge_index[0], num_nodes=data.num_nodes).float())
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     history: dict[str, list[float]] = {"train_loss": [], "val_mae": []}
@@ -244,8 +282,13 @@ def train_dgi(
     epochs: int = 100,
     lr: float = 1e-3,
     verbose: bool = False,
+    device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
     """Train a Deep Graph Infomax model (unsupervised)."""
+    dev = _resolve_device(device)
+    if isinstance(model, torch.nn.Module):
+        model = model.to(dev)
+    data = data.to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     history: dict[str, list[float]] = {"dgi_loss": []}
     iterator = tqdm(range(epochs), desc="Epochs", leave=False, disable=not verbose)
@@ -270,6 +313,7 @@ def train_link_prediction(
     epochs: int = 100,
     lr: float = 1e-2,
     verbose: bool = False,
+    device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
     """Train a link predictor with binary cross-entropy on RandomLinkSplit.
 
@@ -277,6 +321,12 @@ def train_link_prediction(
     embeddings and ``decode(z, edge_label_index)`` returning per-edge scores
     (see :class:`graphnetz.models._adapters.LinkPredWrapper`).
     """
+    dev = _resolve_device(device)
+    if isinstance(model, torch.nn.Module):
+        model = model.to(dev)
+    train_data = train_data.to(dev)
+    val_data = val_data.to(dev)
+    test_data = test_data.to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     history: dict[str, list[float]] = {"train_loss": [], "val_auc": [], "test_auc": []}
     iterator = tqdm(range(epochs), desc="Epochs", leave=False, disable=not verbose)
@@ -398,6 +448,7 @@ def train_relational_link_prediction(
     epochs: int = 100,
     lr: float = 1e-2,
     verbose: bool = False,
+    device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
     """Train a relational link predictor (DistMult) on knowledge graph triples.
 
@@ -405,13 +456,18 @@ def train_relational_link_prediction(
     embeddings and ``decode(z, edge_index, edge_type)`` returning per-edge
     scores (see :class:`graphnetz.models._adapters.RelationalLinkPredWrapper`).
     """
+    dev = _resolve_device(device)
+    if isinstance(model, torch.nn.Module):
+        model = model.to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     history: dict[str, list[float]] = {"train_loss": [], "val_auc": [], "test_auc": []}
 
-    # Ensure node features exist
-    train_data = _ensure_node_features(train_data)
-    val_data = _ensure_node_features(val_data)
-    test_data = _ensure_node_features(test_data)
+    # Ensure node features exist (fabricated on CPU first, then moved to
+    # ``dev`` so the encoder, eye-features, and edge tensors all share
+    # one device.)
+    train_data = _ensure_node_features(train_data).to(dev)
+    val_data = _ensure_node_features(val_data).to(dev)
+    test_data = _ensure_node_features(test_data).to(dev)
 
     pos_edge_index = train_data.edge_index
     pos_edge_type = train_data.edge_type

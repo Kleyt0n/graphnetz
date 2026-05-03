@@ -573,11 +573,12 @@ def _run_task(
     hidden: int,
     epochs: int,
     verbose: bool = False,
+    device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
     if task.kind == "node_cls":
         data = ds[0]
         model = spec.build(ds.num_features, hidden, ds.num_classes, kind="node_cls")
-        return train_node_classification(model, data, epochs=epochs, verbose=verbose)
+        return train_node_classification(model, data, epochs=epochs, verbose=verbose, device=device)
 
     if task.kind == "graph_cls":
         shuffled = ds.shuffle()
@@ -585,7 +586,9 @@ def _run_task(
         train_loader = DataLoader(shuffled[:split], batch_size=32, shuffle=True)
         val_loader = DataLoader(shuffled[split:], batch_size=32)
         model = spec.build(shuffled.num_features, hidden, shuffled.num_classes, kind="graph_cls")
-        return train_graph_classification(model, train_loader, val_loader, epochs=epochs, verbose=verbose)
+        return train_graph_classification(
+            model, train_loader, val_loader, epochs=epochs, verbose=verbose, device=device
+        )
 
     if task.kind == "graph_reg":
         # Loader may return either a single dataset (used for both train and
@@ -614,7 +617,9 @@ def _run_task(
                     batch.x = self.embed(batch.x.view(-1).long())
                 return self.inner(batch)
 
-        return train_graph_regression(_AtomEmbed(), train_loader, val_loader, epochs=epochs, verbose=verbose)
+        return train_graph_regression(
+            _AtomEmbed(), train_loader, val_loader, epochs=epochs, verbose=verbose, device=device
+        )
 
     if task.kind == "link_pred":
         import math
@@ -682,6 +687,7 @@ def _run_task(
                 test_split,
                 epochs=epochs,
                 verbose=verbose,
+                device=device,
             )
 
         # Detect graph direction from the data itself instead of forcing
@@ -714,7 +720,9 @@ def _run_task(
         from graphnetz.training import _LinkPredLike
 
         lp_model = _cast(_LinkPredLike, spec.build(train_data.num_features, hidden, hidden, kind="link_pred"))
-        return train_link_prediction(lp_model, train_data, val_data, test_data, epochs=epochs, verbose=verbose)
+        return train_link_prediction(
+            lp_model, train_data, val_data, test_data, epochs=epochs, verbose=verbose, device=device
+        )
 
     msg = f"Unknown task kind: {task.kind}"
     raise ValueError(msg)
@@ -1737,6 +1745,7 @@ def run_benchmark(
     seeds: int | Iterable[int] | None = None,
     seed: int | None = None,
     tasks: Iterable[Task] | None = None,
+    device: torch.device | str | None = "auto",
 ) -> BenchmarkReport:
     """Run a benchmark across one or more (model, task, seed) combinations.
 
@@ -1828,7 +1837,9 @@ def run_benchmark(
                     if ds_cache is None:
                         ds_cache = task.loader(f"{root}/{category}/{task.name}")
                     ds = ds_cache
-                history = _run_task(task, ds, spec, hidden_channels, epochs or task.epochs, verbose=verbose)
+                history = _run_task(
+                    task, ds, spec, hidden_channels, epochs or task.epochs, verbose=verbose, device=device
+                )
                 histories[task.name][model_name].append(history)
                 # Update overall progress with latest metric
                 last_metrics = {k: v[-1] for k, v in history.items() if v}
@@ -1837,12 +1848,15 @@ def run_benchmark(
                 overall_pbar.update(1)
     overall_pbar.close()
 
+    from graphnetz.training import _resolve_device
+
     config = {
         "category": category,
         "kind": kind,
         "hidden_channels": hidden_channels,
         "epochs": epochs,
         "only": only,
+        "device": str(_resolve_device(device)),
     }
     return BenchmarkReport(seeds=seed_list, histories=histories, config=config)
 

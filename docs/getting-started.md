@@ -43,6 +43,14 @@ Use this when you only need *one* model on *one* dataset and don't care about
 cross-seed variance. For everything else — multi-seed, multi-task,
 multi-model — reach for `run_benchmark`.
 
+```{tip}
+**GPU is automatic.** Both the standalone trainers and `run_benchmark`
+accept `device='auto'` (the default). The runtime picks CUDA when
+available, then Apple-silicon MPS, then CPU, and moves the model and
+data onto it for you. Pin placement explicitly with `device='cpu'` (or
+any `torch.device`) when you need to.
+```
+
 ## Run a multi-seed benchmark
 
 ```python
