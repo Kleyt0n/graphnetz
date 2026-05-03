@@ -20,15 +20,9 @@ Most GNN benchmarks report point-estimate accuracies on a handful of citation gr
 
 - multi-seed Student's *t* confidence intervals per cell,
 - Holm–Bonferroni paired *t*-tests (or Wilcoxon signed-rank) within each task,
-- Demšar critical-difference diagrams from Friedman ranks with a Nemenyi
-  post-hoc.
+- Demšar critical-difference diagrams from Friedman ranks with a Nemenyi post-hoc.
 
-The catalogue is organised along a **category × task** taxonomy: 58 dataset
-loaders across 10 scientific categories crossed with 4 task kinds (node
-classification, graph classification, graph regression, link prediction). Five
-canonical architectures (GCN, GAT, GIN, GraphSAGE, Graph Transformer) plug into
-every kind via a small set of task-kind adapters; Deep Graph Infomax is
-exposed as an optional pre-training utility.
+The catalogue is organised along a **category × task** taxonomy: 63 dataset loaders across 10 scientific categories crossed with 4 task kinds (node classification, graph classification, graph regression, link prediction). OGB datasets are available and require the optional `ogb` extra; Five canonical architectures (GCN, GAT, GIN, GraphSAGE, Graph Transformer) plug into every kind via a small set of task-kind adapters; Deep Graph Infomax is exposed as an optional pre-training utility.
 
 ## Install
 
@@ -94,28 +88,27 @@ every cell carries a real test-time metric — there is no self-supervised
 
 | Category | # | Task kinds | Loaders |
 |---|---:|---|---|
-| Combinatorial | 6 | GC, GR, LP | random TSP, VRP, max-flow, bipartite matching, coloring, max-cut |
-| Biology | 10 | GC, GR, NC, LP | MUTAG, PROTEINS, ENZYMES, Peptides-func/struct, PPI, C. elegans, Budapest connectome, hospital/high-school contacts |
-| Social | 14 | NC, LP | Cora, CiteSeer, PubMed, WikiCS, Roman-empire, Amazon-ratings, Minesweeper, Tolokers, Questions, MovieLens-100k, Karate, Facebook friends, DBLP coauthor, DNC emails |
+| Combinatorial | 6 | LP | random TSP, VRP, max-flow, bipartite matching, coloring, max-cut |
+| Biology | 12 | GC, GR, LP | MUTAG, PROTEINS, ENZYMES, Peptides-func/struct, PPI, C. elegans, Budapest connectome, hospital/high-school contacts, ogbg-molhiv†, ogbg-molpcba† |
+| Social | 16 | NC, LP | Cora, CiteSeer, PubMed, WikiCS, Roman-empire, Amazon-ratings, Minesweeper, Tolokers, Questions, MovieLens-100k, Karate, Facebook friends, DBLP coauthor, DNC emails, ogbn-arxiv†, ogbl-collab† |
 | Knowledge | 3 | LP | FB15k-237, WordNet18-RR, WordNet (Netz) |
 | Infrastructure | 6 | LP | power grid, EuroRoad, US roads, EU airlines, London transport, urban streets |
-| Finance | 4 | NC, LP | Elliptic Bitcoin, product space, board of directors, US patents |
+| Finance | 5 | NC, LP | Elliptic Bitcoin, product space, board of directors, US patents, ogbn-products† |
 | Computing | 4 | LP | Internet AS, Internet topology, AS-Skitter, route views |
 | Vision | 5 | GC, NC | MNIST/CIFAR-10 superpixels, ModelNet10/40, ShapeNet |
 | Physics | 3 | GR, LP | QM9, ZINC, Ising lattice |
 | Security | 3 | GC, LP | MalNet-Tiny, 9/11 terrorists, train terrorists |
 
-Installing the optional `ogb` extra (`pip install graphnetz[ogb]`) folds
-five additional OGB loaders into the existing categories: `ogbn-arxiv`
-and `ogbl-collab` join **Social**, `ogbn-products` joins **Finance**,
-`ogbg-molhiv` and `ogbg-molpcba` join **Biology**. They are not exposed
-as a separate category — they appear in `run_benchmark(category, ...)`
-alongside the curated built-ins.
+† Requires the optional `ogb` extra (`pip install graphnetz[ogb]`). The
+five OGB loaders are folded into their domain categories rather than
+exposed as a separate `ogb` category, so they appear in
+`run_benchmark(category, ...)` alongside the curated built-ins.
 
 ```python
 from graphnetz.datasets.social import cora, roman_empire
 from graphnetz.datasets.biology import peptides_func
 from graphnetz.datasets.computing import internet_as
+
 # Optional OGB loaders live in their domain modules (require `pip install graphnetz[ogb]`):
 from graphnetz.datasets.social import ogbn_arxiv     # node_cls
 from graphnetz.datasets.biology import ogbg_molhiv   # graph_cls

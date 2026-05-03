@@ -1,10 +1,6 @@
 # Dataset taxonomy
 
-GraphNetz organises **58 loaders across 10 scientific categories**, each
-declaring the task kinds it can serve. The taxonomy is the single source of
-truth: the curated benchmark, the per-category notebooks, and the documented
-loader names all derive from
-{py:data}`graphnetz.datasets.LOADER_REGISTRY`.
+GraphNetz organises **63 loaders across 10 scientific categories**, each declaring the task kinds it can serve. The taxonomy is the single source of truth: the curated benchmark, the per-category notebooks, and the documented loader names all derive from {py:data}`graphnetz.datasets.LOADER_REGISTRY`.
 
 ```python
 from graphnetz.datasets import LOADER_REGISTRY, list_datasets
@@ -37,24 +33,26 @@ is no self-supervised pretext loss in the headline report.
 
 | Category | # | Task kinds | Loaders |
 |---|---:|---|---|
-| **Combinatorial** | 6 | GC · GR · LP | random TSP, VRP, max-flow, bipartite matching, coloring, max-cut |
-| **Biology** | 10 | GC · GR · NC · LP | MUTAG, PROTEINS, ENZYMES, Peptides-func/struct, PPI, *C. elegans*, Budapest connectome, hospital / high-school contacts |
-| **Social** | 14 | NC · LP | Cora, CiteSeer, PubMed, WikiCS, Roman-empire, Amazon-ratings, Minesweeper, Tolokers, Questions, MovieLens-100k, Karate, Facebook friends, DBLP coauthor, DNC emails |
+| **Combinatorial** | 6 | LP | random TSP, VRP, max-flow, bipartite matching, coloring, max-cut |
+| **Biology** | 12 | GC · GR · LP | MUTAG, PROTEINS, ENZYMES, Peptides-func/struct, PPI, *C. elegans*, Budapest connectome, hospital / high-school contacts, ogbg-molhiv†, ogbg-molpcba† |
+| **Social** | 16 | NC · LP | Cora, CiteSeer, PubMed, WikiCS, Roman-empire, Amazon-ratings, Minesweeper, Tolokers, Questions, MovieLens-100k, Karate, Facebook friends, DBLP coauthor, DNC emails, ogbn-arxiv†, ogbl-collab† |
 | **Knowledge** | 3 | LP | FB15k-237, WordNet18-RR, WordNet (Netzschleuder) |
 | **Infrastructure** | 6 | LP | power grid, EuroRoad, US roads, EU airlines, London transport, urban streets |
-| **Finance** | 4 | NC · LP | Elliptic Bitcoin, product space, board of directors, US patents |
+| **Finance** | 5 | NC · LP | Elliptic Bitcoin, product space, board of directors, US patents, ogbn-products† |
 | **Computing** | 4 | LP | Internet AS, Internet topology, AS-Skitter, route views |
 | **Vision** | 5 | GC · NC | MNIST/CIFAR-10 superpixels, ModelNet10/40, ShapeNet |
 | **Physics** | 3 | GR · LP | QM9, ZINC, Ising lattice |
 | **Security** | 3 | GC · LP | MalNet-Tiny, 9/11 terrorists, train terrorists |
 
 ```{note}
-Installing the optional `ogb` extra (`pip install graphnetz[ogb]`) folds
-five additional OGB loaders into the existing categories rather than
-creating a separate `ogb` category: `ogbn-arxiv` and `ogbl-collab` are
-appended to **Social**, `ogbn-products` to **Finance**, and
-`ogbg-molhiv` and `ogbg-molpcba` to **Biology**. They appear in
-`run_benchmark(category, ...)` alongside the curated built-ins.
+Loaders marked with † come from OGB and require the optional `ogb`
+extra (`pip install graphnetz[ogb]`): `ogbn-arxiv` and `ogbl-collab`
+in **Social**, `ogbn-products` in **Finance**, and `ogbg-molhiv` and
+`ogbg-molpcba` in **Biology**. They are folded into their domain
+categories rather than exposed as a separate `ogb` category, so they
+appear in `run_benchmark(category, ...)` alongside the curated
+built-ins. Without the extra installed, the catalogue exposes 58 of
+the 63 loaders.
 ```
 
 ## Loading individual datasets
