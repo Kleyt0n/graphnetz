@@ -11,8 +11,12 @@ Coverage:
   homophilic Planetoid setting (Platonov et al., NeurIPS 2023).
 - Communication: Netz ``dnc`` (Democratic National Committee email leak).
 - Recommendation: PyG ``MovieLens100K``.
+- Open Graph Benchmark (optional ``ogb`` extra): ``ogbn_arxiv`` (arXiv
+  citation network for node classification), ``ogbl_collab``
+  (collaboration network for link prediction).
 """
 
+from torch_geometric.data import Data
 from torch_geometric.datasets import (
     HeterophilousGraphDataset,
     MovieLens100K,
@@ -21,6 +25,7 @@ from torch_geometric.datasets import (
 )
 
 from graphnetz.datasets._netz import Netz
+from graphnetz.datasets._ogb import load_ogb_link, load_ogb_node
 
 
 def cora(root: str) -> Planetoid:
@@ -93,6 +98,20 @@ def questions(root: str) -> HeterophilousGraphDataset:
     return HeterophilousGraphDataset(root=root, name="Questions")
 
 
+def ogbn_arxiv(root: str) -> Data:
+    """OGB arXiv citation network (~169 K nodes, 40 subject classes)."""
+    return load_ogb_node("ogbn-arxiv", root)
+
+
+def ogbl_collab(root: str) -> Data:
+    """OGB collaboration network (~235 K author nodes, 128-d features).
+
+    Returns a single PyG ``Data`` graph; the benchmark runner re-splits
+    via ``RandomLinkSplit`` rather than using OGB's official edge split.
+    """
+    return load_ogb_link("ogbl-collab", root)
+
+
 __all__ = [
     "amazon_ratings",
     "citeseer",
@@ -103,6 +122,8 @@ __all__ = [
     "karate",
     "minesweeper",
     "movielens100k",
+    "ogbl_collab",
+    "ogbn_arxiv",
     "pubmed",
     "questions",
     "roman_empire",

@@ -48,6 +48,15 @@ is no self-supervised pretext loss in the headline report.
 | **Physics** | 3 | GR · LP | QM9, ZINC, Ising lattice |
 | **Security** | 3 | GC · LP | MalNet-Tiny, 9/11 terrorists, train terrorists |
 
+```{note}
+Installing the optional `ogb` extra (`pip install graphnetz[ogb]`) folds
+five additional OGB loaders into the existing categories rather than
+creating a separate `ogb` category: `ogbn-arxiv` and `ogbl-collab` are
+appended to **Social**, `ogbn-products` to **Finance**, and
+`ogbg-molhiv` and `ogbg-molpcba` to **Biology**. They appear in
+`run_benchmark(category, ...)` alongside the curated built-ins.
+```
+
 ## Loading individual datasets
 
 Each category exposes thin loader functions returning a PyG dataset:
@@ -62,6 +71,15 @@ ds_rom  = roman_empire("data/roman_empire")       # heterophilic node_cls
 ds_mut  = mutag("data/mutag")                     # graph_cls
 ds_pep  = peptides_func("data/peptides_func")     # LRGB graph_cls
 ds_inet = internet_as("data/internet_as")         # link_pred
+
+# Optional OGB loaders live in their domain modules
+# (require `pip install graphnetz[ogb]`):
+from graphnetz.datasets.social import ogbn_arxiv, ogbl_collab
+from graphnetz.datasets.biology import ogbg_molhiv
+
+ds_arxiv  = ogbn_arxiv("data/ogb")                # node_cls (in Social)
+ds_collab = ogbl_collab("data/ogb")               # link_pred (in Social)
+ds_hiv    = ogbg_molhiv("data/ogb")               # graph_cls (in Biology)
 ```
 
 The first call downloads + processes into the directory you pass; subsequent

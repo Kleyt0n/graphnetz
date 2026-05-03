@@ -69,9 +69,7 @@ from graphnetz.training import (
     train_node_classification,
 )
 
-_ogb_module: Any = None
-if importlib.util.find_spec("ogb") is not None:
-    from graphnetz.datasets import ogb as _ogb_module  # type: ignore[no-redef]
+_HAS_OGB = importlib.util.find_spec("ogb") is not None
 
 # DGI is intentionally not a task kind: it is a self-supervised training
 # objective whose "metric" is its own loss, so it cannot serve as a
@@ -341,15 +339,23 @@ BENCHMARK_TASKS: dict[str, dict[str, list[Task]]] = {
     },
 }
 
-if _ogb_module is not None:
-    BENCHMARK_TASKS["ogb"] = {
-        "node_cls": [
-            Task("ogbn_arxiv", "node_cls", _ogb_module.ogbn_arxiv, epochs=50),
-        ],
-        "graph_cls": [
-            Task("ogbg_molhiv", "graph_cls", _ogb_module.ogbg_molhiv, epochs=20),
-        ],
-    }
+if _HAS_OGB:
+    # OGB tasks live in the domain modules; we only register them as
+    # benchmark tasks when the ``ogb`` extra is importable so the
+    # curated catalogue stays runnable without it.
+    BENCHMARK_TASKS["social"]["node_cls"].append(
+        Task("ogbn_arxiv", "node_cls", social.ogbn_arxiv, epochs=50),
+    )
+    BENCHMARK_TASKS["social"]["link_pred"].append(
+        Task("ogbl_collab", "link_pred", social.ogbl_collab, epochs=20),
+    )
+    BENCHMARK_TASKS["finance"].setdefault("node_cls", []).append(
+        Task("ogbn_products", "node_cls", finance.ogbn_products, epochs=20),
+    )
+    BENCHMARK_TASKS["biology"]["graph_cls"].extend([
+        Task("ogbg_molhiv", "graph_cls", biology.ogbg_molhiv, epochs=20),
+        Task("ogbg_molpcba", "graph_cls", biology.ogbg_molpcba, epochs=20),
+    ])
 
 
 def iter_benchmark_tasks(

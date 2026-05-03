@@ -7,14 +7,19 @@ Coverage:
 - Innovation: ``us_patents`` citation network.
 - Transactions / fraud / AML: PyG ``EllipticBitcoinDataset`` (illicit-wallet
   detection on Bitcoin transactions).
+- Open Graph Benchmark (optional ``ogb`` extra): ``ogbn_products``
+  (Amazon co-purchase graph for node classification, ~2.4 M nodes,
+  47 product categories).
 
 Inter-bank exposure datasets are typically confidential and have no canonical
 public benchmark.
 """
 
+from torch_geometric.data import Data
 from torch_geometric.datasets import EllipticBitcoinDataset
 
 from graphnetz.datasets._netz import Netz
+from graphnetz.datasets._ogb import load_ogb_node
 
 
 def product_space(root: str) -> Netz:
@@ -37,4 +42,13 @@ def elliptic_bitcoin(root: str) -> EllipticBitcoinDataset:
     return EllipticBitcoinDataset(root=root)
 
 
-__all__ = ["board_directors", "elliptic_bitcoin", "product_space", "us_patents"]
+def ogbn_products(root: str) -> Data:
+    """OGB Amazon product co-purchase network (~2.4 M nodes, 47 classes).
+
+    Larger than ``ogbn_arxiv`` — full-graph training is feasible on a
+    workstation GPU but slow; reduce ``epochs`` for quick iteration.
+    """
+    return load_ogb_node("ogbn-products", root)
+
+
+__all__ = ["board_directors", "elliptic_bitcoin", "ogbn_products", "product_space", "us_patents"]

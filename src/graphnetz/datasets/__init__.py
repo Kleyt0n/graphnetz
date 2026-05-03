@@ -34,7 +34,6 @@ unsupervised pre-training on top of any encoder.
 """
 
 import importlib.util
-from typing import Any
 
 from graphnetz.datasets import (
     biology,
@@ -50,9 +49,12 @@ from graphnetz.datasets import (
 )
 from graphnetz.datasets._netz import Netz, download_all_networks_netz
 
-_ogb_module: Any = None
-if importlib.util.find_spec("ogb") is not None:
-    from graphnetz.datasets import ogb as _ogb_module  # type: ignore[no-redef]
+# OGB loaders live directly inside the domain modules (``social.ogbn_arxiv``,
+# ``biology.ogbg_molhiv``, etc.). They raise a clear ``ImportError`` at
+# call time when the optional ``ogb`` package is missing; the registries
+# below only reference them when ``ogb`` is importable so the curated
+# benchmark stays runnable without the extra installed.
+_HAS_OGB = importlib.util.find_spec("ogb") is not None
 
 CATEGORIES = {
     "combinatorial": combinatorial,
@@ -66,9 +68,6 @@ CATEGORIES = {
     "physics": physics,
     "security": security,
 }
-
-if _ogb_module is not None:
-    CATEGORIES["ogb"] = _ogb_module
 
 
 # Source-of-truth taxonomy: category -> task kind -> [(loader_name, callable)].
@@ -193,11 +192,21 @@ LOADER_REGISTRY: dict[str, dict[str, list[tuple[str, object]]]] = {
     },
 }
 
-if _ogb_module is not None:
-    LOADER_REGISTRY["ogb"] = {
-        "node_cls": [("ogbn_arxiv", _ogb_module.ogbn_arxiv)],
-        "graph_cls": [("ogbg_molhiv", _ogb_module.ogbg_molhiv)],
-    }
+if _HAS_OGB:
+    # OGB loaders live in the domain modules; we only fold them into the
+    # registry when the ``ogb`` extra is importable so default benchmark
+    # runs stay green without it. Mapping rationale:
+    #   - ogbn_arxiv     -> social   (citation network)
+    #   - ogbn_products  -> finance  (e-commerce co-purchase, alongside
+    #                                  product_space)
+    #   - ogbg_molhiv    -> biology  (molecular bioactivity)
+    #   - ogbg_molpcba   -> biology
+    #   - ogbl_collab    -> social   (collaboration / coauthorship)
+    LOADER_REGISTRY["social"]["node_cls"].append(("ogbn_arxiv", social.ogbn_arxiv))
+    LOADER_REGISTRY["social"]["link_pred"].append(("ogbl_collab", social.ogbl_collab))
+    LOADER_REGISTRY["finance"]["node_cls"].append(("ogbn_products", finance.ogbn_products))
+    LOADER_REGISTRY["biology"]["graph_cls"].append(("ogbg_molhiv", biology.ogbg_molhiv))
+    LOADER_REGISTRY["biology"]["graph_cls"].append(("ogbg_molpcba", biology.ogbg_molpcba))
 
 
 def list_datasets(
@@ -235,6 +244,3 @@ __all__ = [
     "social",
     "vision",
 ]
-
-if _ogb_module is not None:
-    __all__.append("ogb")

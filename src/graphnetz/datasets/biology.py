@@ -10,14 +10,21 @@ Coverage:
 - Metabolic: Netzschleuder ``celegans_metabolic``.
 - Brain connectomes: Netzschleuder ``budapest_connectome``.
 - Epidemiology: Netzschleuder ``sp_hospital`` and ``sp_high_school`` contact graphs.
+- Open Graph Benchmark (optional ``ogb`` extra): ``ogbg_molhiv`` (~41 K
+  molecules, binary HIV-inhibition), ``ogbg_molpcba`` (~438 K
+  molecules, 128 binary bioassay tasks). Both also need the ``chem``
+  extra for RDKit featurisation.
 
 Patient-disease-treatment knowledge graphs have no canonical free dataset and
 are intentionally omitted.
 """
 
+from typing import Any
+
 from torch_geometric.datasets import PPI, LRGBDataset, TUDataset
 
 from graphnetz.datasets._netz import Netz
+from graphnetz.datasets._ogb import load_ogb_graph
 
 
 def mutag(root: str) -> TUDataset:
@@ -70,6 +77,16 @@ def peptides_struct(root: str, split: str = "train") -> LRGBDataset:
     return LRGBDataset(root=root, name="Peptides-struct", split=split)
 
 
+def ogbg_molhiv(root: str) -> Any:
+    """OGB MolHIV: ~41 K molecules, binary HIV-inhibition labels."""
+    return load_ogb_graph("ogbg-molhiv", root)
+
+
+def ogbg_molpcba(root: str) -> Any:
+    """OGB MolPCBA: ~438 K molecules, 128 binary bioassay labels."""
+    return load_ogb_graph("ogbg-molpcba", root)
+
+
 __all__ = [
     "budapest_connectome",
     "celegans",
@@ -77,6 +94,8 @@ __all__ = [
     "high_school_contacts",
     "hospital_contacts",
     "mutag",
+    "ogbg_molhiv",
+    "ogbg_molpcba",
     "peptides_func",
     "peptides_struct",
     "ppi",

@@ -104,13 +104,21 @@ every cell carries a real test-time metric — there is no self-supervised
 | Vision | 5 | GC, NC | MNIST/CIFAR-10 superpixels, ModelNet10/40, ShapeNet |
 | Physics | 3 | GR, LP | QM9, ZINC, Ising lattice |
 | Security | 3 | GC, LP | MalNet-Tiny, 9/11 terrorists, train terrorists |
-| OGB | 2 | NC, GC | ogbn-arxiv, ogbg-molhiv (requires `pip install graphnetz[ogb]`) |
+
+Installing the optional `ogb` extra (`pip install graphnetz[ogb]`) folds
+five additional OGB loaders into the existing categories: `ogbn-arxiv`
+and `ogbl-collab` join **Social**, `ogbn-products` joins **Finance**,
+`ogbg-molhiv` and `ogbg-molpcba` join **Biology**. They are not exposed
+as a separate category — they appear in `run_benchmark(category, ...)`
+alongside the curated built-ins.
 
 ```python
 from graphnetz.datasets.social import cora, roman_empire
 from graphnetz.datasets.biology import peptides_func
 from graphnetz.datasets.computing import internet_as
-from graphnetz.datasets.ogb import ogbn_arxiv, ogbg_molhiv
+# Optional OGB loaders live in their domain modules (require `pip install graphnetz[ogb]`):
+from graphnetz.datasets.social import ogbn_arxiv     # node_cls
+from graphnetz.datasets.biology import ogbg_molhiv   # graph_cls
 
 ds_cora = cora("data/cora")
 ds_rom  = roman_empire("data/roman_empire")        # heterophilic

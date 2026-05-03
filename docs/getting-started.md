@@ -187,8 +187,10 @@ expose, how splits are encoded) live in the trainer docstrings:
 ## Five-minute tour
 
 1. **Pick a category.** `combinatorial`, `biology`, `social`, `knowledge`,
-   `infrastructure`, `finance`, `computing`, `vision`, `physics`, `security`
-   (plus `ogb` when the optional extra is installed).
+   `infrastructure`, `finance`, `computing`, `vision`, `physics`, `security`.
+   Installing the optional `ogb` extra adds OGB datasets to the existing
+   domain categories (e.g. `ogbn-arxiv` joins `social/node_cls`,
+   `ogbg-molhiv` joins `biology/graph_cls`).
 2. **Pick a task kind.** `node_cls`, `graph_cls`, `graph_reg`, or
    `link_pred`. The runner skips models that don't declare support for the
    chosen kind.

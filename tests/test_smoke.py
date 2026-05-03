@@ -70,7 +70,7 @@ def test_ogb_import_error() -> None:
     if ogb_spec is not None:
         pytest.skip("ogb extra is installed")
 
-    from graphnetz.datasets.ogb import ogbn_arxiv
+    from graphnetz.datasets.social import ogbn_arxiv
 
     with pytest.raises(ImportError, match="requires the 'ogb' extra"):
         ogbn_arxiv("data/ogb")
