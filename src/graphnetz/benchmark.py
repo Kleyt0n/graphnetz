@@ -352,10 +352,12 @@ if _HAS_OGB:
     BENCHMARK_TASKS["finance"].setdefault("node_cls", []).append(
         Task("ogbn_products", "node_cls", finance.ogbn_products, epochs=20),
     )
-    BENCHMARK_TASKS["biology"]["graph_cls"].extend([
-        Task("ogbg_molhiv", "graph_cls", biology.ogbg_molhiv, epochs=20),
-        Task("ogbg_molpcba", "graph_cls", biology.ogbg_molpcba, epochs=20),
-    ])
+    BENCHMARK_TASKS["biology"]["graph_cls"].extend(
+        [
+            Task("ogbg_molhiv", "graph_cls", biology.ogbg_molhiv, epochs=20),
+            Task("ogbg_molpcba", "graph_cls", biology.ogbg_molpcba, epochs=20),
+        ]
+    )
 
 
 def iter_benchmark_tasks(
