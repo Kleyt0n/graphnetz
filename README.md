@@ -5,7 +5,7 @@
 <p align="center"><em>Statistically rigorous GNN benchmarking</em></p>
 
 <p align="center">
-  <a href="https://github.com/quant-sci/graphnet/actions"><img alt="Build" src="https://img.shields.io/badge/build-passing-22333B?style=flat-square&labelColor=EAE0D5"></a>
+  <a href="https://github.com/quant-sci/graphnetz/actions"><img alt="Build" src="https://img.shields.io/badge/build-passing-22333B?style=flat-square&labelColor=EAE0D5"></a>
   <a href="https://graphnetz.readthedocs.io/en/latest/"><img alt="Docs" src="https://img.shields.io/badge/passing-docs-22333B?style=flat-square&labelColor=EAE0D5"></a>
   <a href="https://www.python.org/downloads/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-22333B?style=flat-square&labelColor=EAE0D5"></a>
   <a href="LICENCE.txt"><img alt="License" src="https://img.shields.io/badge/license-MIT-22333B?style=flat-square&labelColor=EAE0D5"></a>
@@ -41,8 +41,8 @@ pip install graphnetz
 For local development:
 
 ```bash
-git clone https://github.com/quant-sci/graphnet
-cd graphnet
+git clone https://github.com/quant-sci/graphnetz
+cd graphnetz
 uv sync --group dev
 ```
 
@@ -200,7 +200,7 @@ figure (`paper/figures/`) and LaTeX table (`paper/tables/`) referenced by
 
 ## Issues
 
-Track issues at [github.com/quant-sci/graphnetz/issues](https://github.com/quant-sci/graphnet/issues).
+Track issues at [github.com/quant-sci/graphnetz/issues](https://github.com/quant-sci/graphnetz/issues).
 
 ## Citation
 
