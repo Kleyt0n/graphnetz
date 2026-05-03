@@ -107,7 +107,7 @@ html_css_files = ["custom.css"]
 html_theme_options = {
     "logo": "logo.svg",
     "github_user": "quant-sci",
-    "github_repo": "graphnet",
+    "github_repo": "graphnetz",
     "github_button": True,
     "github_type": "star",
     "github_count": False,
