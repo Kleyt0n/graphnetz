@@ -22,7 +22,11 @@ Most GNN benchmarks report point-estimate accuracies on a handful of citation gr
 - Holm–Bonferroni paired *t*-tests (or Wilcoxon signed-rank) within each task,
 - Demšar critical-difference diagrams from Friedman ranks with a Nemenyi post-hoc.
 
-The catalogue is organised along a **category × task** taxonomy: 63 dataset loaders across 10 scientific categories crossed with 4 task kinds (node classification, graph classification, graph regression, link prediction). OGB datasets are available and require the optional `ogb` extra; Five canonical architectures (GCN, GAT, GIN, GraphSAGE, Graph Transformer) plug into every kind via a small set of task-kind adapters; Deep Graph Infomax is exposed as an optional pre-training utility.
+The catalogue is organised along a **category × task** taxonomy: 
+
+- 63 dataset loaders across 10 scientific categories
+- 4 task kinds (node classification, graph classification, graph regression, link prediction)
+- 5 canonical architectures (GCN, GAT, GIN, GraphSAGE, Graph Transformer) plug into every kind via a small set of task-kind adapters;
 
 ## Install
 

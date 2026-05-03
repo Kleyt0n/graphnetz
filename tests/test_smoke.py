@@ -98,8 +98,6 @@ def test_resolve_device_auto_picks_available() -> None:
 
 def test_train_node_classification_auto_device() -> None:
     """Trainer auto-moves model + data; final accuracy is on the resolved device."""
-    import torch
-
     from graphnetz import GCN, train_node_classification
     from graphnetz.datasets.social import cora
 
