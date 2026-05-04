@@ -135,8 +135,9 @@ html_show_sourcelink = False
 html_show_sphinx = False
 html_last_updated_fmt = "%Y-%m-%d"
 
-# Pygments
+# Pygments — Furo picks the correct one based on the active light/dark theme.
 pygments_style = "tango"
+pygments_dark_style = "monokai"
 
 # Suppress noisy autodoc warnings on optional dependencies.
 # ``ref.citation`` silences "Citation [Xxx] is not referenced" warnings for
