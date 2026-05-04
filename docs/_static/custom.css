@@ -10,6 +10,26 @@
   --gn-blue:   #4A90B8;
 }
 
+/* Index-page critical-difference figure */
+figure.gn-cd {
+  margin: 1.5rem auto 2rem;
+}
+
+figure.gn-cd img {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  margin: 0 auto;
+}
+
+figure.gn-cd figcaption {
+  font-size: 0.9em;
+  color: var(--color-foreground-secondary);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
 .gn-kind {
   display: inline-block;
   padding: 0.1em 0.5em;

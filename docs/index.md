@@ -4,13 +4,34 @@ hide-toc: true
 
 # GraphNetz
 
+[![GitHub](https://img.shields.io/github/stars/quant-sci/graphnetz?style=flat-square&logo=github&logoColor=22333B&labelColor=EAE0D5&color=22333B)](https://github.com/quant-sci/graphnetz)
+[![Build](https://img.shields.io/badge/build-passing-22333B?style=flat-square&labelColor=EAE0D5)](https://github.com/quant-sci/graphnetz/actions)
+[![Docs](https://img.shields.io/badge/passing-docs-22333B?style=flat-square&labelColor=EAE0D5)](https://graphnetz.readthedocs.io/en/latest/)
+[![Python](https://img.shields.io/badge/python-3.10%2B-22333B?style=flat-square&labelColor=EAE0D5)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-22333B?style=flat-square&labelColor=EAE0D5)](https://github.com/quant-sci/graphnetz/blob/main/LICENCE.txt)
+[![Paper](https://img.shields.io/badge/paper-PDF-22333B?style=flat-square&labelColor=EAE0D5)](https://arxiv.org/)
+
 **A GNN benchmark whose default output is a statistical report, not a leaderboard.**
 
-GraphNetz turns the standard "train, eval, table of accuracies" loop into a
-reproducible pipeline that produces the artefacts a reviewer would otherwise
-ask for: confidence intervals on every cell, paired pairwise tests with
-multiple-comparison correction, and a Demšar critical-difference diagram
-across datasets.
+GraphNetz turns the standard "train, eval, table of accuracies" loop into a reproducible pipeline that produces the artefacts a reviewer would otherwise ask for: confidence intervals on every cell, paired pairwise tests with multiple-comparison correction, and a Demšar critical-difference diagram across datasets.
+
+```{figure} _static/critical_difference.png
+:alt: Demšar critical-difference diagram comparing four GNN architectures by mean rank.
+:class: gn-cd only-light
+:align: center
+
+```
+
+```{figure} _static/critical_difference_dark.png
+:alt: Demšar critical-difference diagram comparing four GNN architectures by mean rank.
+:class: gn-cd only-dark
+:align: center
+
+A Demšar critical-difference diagram . Models are ordered by mean Friedman
+rank; the horizontal bar connects groups whose ranks are not significantly
+different at the chosen $\alpha$ under the Nemenyi post-hoc.
+```
+
 
 ## Install
 
@@ -22,7 +43,7 @@ uv add graphnetz
 
 Requires Python ≥ 3.10, PyTorch ≥ 2.6, torch-geometric ≥ 2.6.
 
-## A 30-second example
+## Quick Start
 
 ```python
 from graphnetz import GAT, GCN, GraphSAGE, run_benchmark
@@ -41,6 +62,7 @@ report.to_latex("results.tex")   # publication-ready table
 ```
 
 → Walk through this end-to-end in **[Getting started](getting-started.md)**.
+
 
 ## Why GraphNetz
 
