@@ -1,4 +1,4 @@
-/* GraphNetz docs — clean overrides for Alabaster. */
+/* GraphNetz docs — light overrides on top of Furo defaults. */
 
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -10,150 +10,10 @@
   --gn-blue:   #4A90B8;
 }
 
-body {
-  font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  color: #333;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-h1, h2, h3, h4, h5, h6,
-div.body h1, div.body h2, div.body h3,
-div.body h4, div.body h5, div.body h6,
-div.sphinxsidebar h1, div.sphinxsidebar h2,
-div.sphinxsidebar h3, div.sphinxsidebar h4,
-div.sphinxsidebar h1.logo, div.sphinxsidebar h1.logo a,
-div.sphinxsidebar p.logo a,
-div.admonition p.admonition-title {
-  font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 600;
-  color: var(--gn-ink);
-  letter-spacing: -0.01em;
-}
-
-h1, div.body h1 { font-weight: 700; letter-spacing: -0.02em; }
-
-code, pre, kbd, samp {
-  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
-  font-size: 0.9em;
-}
-
-div.sphinxsidebar h1.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-div.sphinxsidebar p.blurb {
-  font-size: 0.95rem;
-  color: #666;
-}
-
-div.sphinxsidebar ul li a {
-  color: var(--gn-ink);
-  font-size: 0.95rem;
-}
-
-div.sphinxsidebar ul li a:hover {
-  color: var(--gn-blue);
-}
-
-div.sphinxsidebar #searchbox input[type="text"] {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.4rem 0.6rem;
-  font-size: 0.9rem;
-}
-
-div.body {
-  max-width: 900px;
-}
-
-div.body h1, div.body h2, div.body h3 {
-  border-bottom: none;
-}
-
-div.body h2 {
-  margin-top: 2rem;
-  padding-bottom: 0.3rem;
-  border-bottom: 2px solid var(--gn-cream);
-}
-
-pre {
-  background: #f8f8f8;
-  border: 1px solid #e8e8e8;
-  border-radius: 6px;
-  padding: 1rem;
-  line-height: 1.5;
-}
-
-code {
-  background: #f5f2ed;
-  color: var(--gn-ink);
-  padding: 0.15em 0.4em;
-  border-radius: 3px;
-  font-size: 0.85em;
-}
-
-table.docutils {
-  border-collapse: collapse;
-  border: 1px solid #ddd;
-  font-size: 0.95rem;
-  margin: 1rem 0;
-}
-
-table.docutils thead th {
-  background: var(--gn-cream);
-  color: var(--gn-ink);
-  font-weight: 600;
-  border-bottom: 2px solid var(--gn-ink);
-  padding: 0.5rem 0.75rem;
-}
-
-table.docutils td, table.docutils th {
-  padding: 0.45rem 0.75rem;
-  border: 1px solid #e8e8e8;
-}
-
-div.admonition {
-  border-radius: 6px;
-  border-left: 3px solid var(--gn-accent);
-  background: #faf8f5;
-  padding: 1rem;
-  margin: 1rem 0;
-}
-
-div.admonition.note {
-  border-left-color: var(--gn-blue);
-}
-
-div.admonition p.admonition-title {
-  font-weight: 600;
-  margin-top: 0;
-}
-
-a {
-  color: var(--gn-blue);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--gn-ink);
-  text-decoration: underline;
-}
-
-dl.py.class > dt, dl.py.function > dt, dl.py.method > dt {
-  background: #f5f2ed;
-  border-left: 3px solid var(--gn-blue);
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-}
-
 .gn-kind {
   display: inline-block;
   padding: 0.1em 0.5em;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-stack--monospace);
   font-size: 0.8em;
   font-weight: 600;
   background: var(--gn-cream);
@@ -161,17 +21,4 @@ dl.py.class > dt, dl.py.function > dt, dl.py.method > dt {
   border: 1px solid #ddd3c2;
   border-radius: 999px;
   margin: 0 0.1em;
-}
-
-/* Index-page hero animation */
-.gn-hero {
-  display: block;
-  width: 100%;
-  max-width: 720px;
-  height: auto;
-  margin: 1.75rem auto 2rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gn-hero { animation: none; }
 }

@@ -3,7 +3,7 @@
 The dispatcher trains every compatible (model, task) pair across multiple
 seeds and returns a :class:`BenchmarkReport` that exposes mean ± 95 % t-CI,
 paired t-tests with Holm-Bonferroni correction, publication-ready LaTeX
-tables, and Nature-styled plots.
+tables, and plots.
 
 Custom models are plugged in via the same three paths as before:
 

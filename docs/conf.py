@@ -35,6 +35,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx_copybutton",
+    "sphinx_design",
 ]
 
 myst_enable_extensions = [
@@ -96,35 +97,38 @@ intersphinx_mapping = {
 }
 
 # --------------------------------------------------------------------------- #
-# Theme: Alabaster
+# Theme: Furo
 # --------------------------------------------------------------------------- #
-html_theme = "alabaster"
+html_theme = "furo"
 html_title = "GraphNetz"
 html_favicon = "_static/favicon.svg"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
+html_logo = "_static/logo.svg"
 
 html_theme_options = {
-    "logo": "logo.svg",
-    "github_user": "quant-sci",
-    "github_repo": "graphnetz",
-    "github_button": True,
-    "github_type": "star",
-    "github_count": False,
-    "description": "Statistically rigorous GNN benchmarking",
-    "show_powered_by": False,
-    "fixed_sidebar": True,
-    "sidebar_width": "260px",
-    "page_width": "960px",
-}
-
-html_sidebars = {
-    "**": [
-        "about.html",
-        "navigation.html",
-        "relations.html",
-        "searchbox.html",
-    ]
+    "sidebar_hide_name": False,
+    "navigation_with_keys": True,
+    "top_of_page_buttons": ["view", "edit"],
+    "source_repository": "https://github.com/quant-sci/graphnetz",
+    "source_branch": "main",
+    "source_directory": "docs/",
+    "light_css_variables": {
+        "color-brand-primary": "#4A90B8",
+        "color-brand-content": "#4A90B8",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#7FB3D5",
+        "color-brand-content": "#7FB3D5",
+    },
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/quant-sci/graphnetz",
+            "html": "",
+            "class": "fa-brands fa-github",
+        },
+    ],
 }
 
 html_show_sourcelink = False

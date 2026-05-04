@@ -1,6 +1,6 @@
-"""Publication-ready Nature-style matplotlib helpers.
+"""Publication-ready matplotlib helpers.
 
-The defaults follow Nature figure guidelines: sans-serif Helvetica/Arial,
+The defaults follow figures guidelines: sans-serif Helvetica/Arial,
 single-column width 89 mm and double-column 183 mm, thin axes, no top/right
 spines, restrained categorical palette, vector output at 300 dpi.
 """
@@ -74,7 +74,7 @@ NATURE_COLORS: tuple[str, ...] = (
 
 
 def set_plot_style() -> None:
-    """Apply the Nature-style rcParams and color cycle."""
+    """Apply the rcParams and color cycle."""
     from cycler import cycler
 
     mpl.rcParams.update(NATURE_RC)

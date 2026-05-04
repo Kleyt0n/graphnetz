@@ -4,6 +4,8 @@
 # so Sphinx can introspect signatures without pulling in the full ML stack
 # (the RTD free tier would otherwise OOM on a torch wheel install).
 sphinx>=7.3
+furo>=2024.1
 myst-parser>=3.0
 sphinx-copybutton>=0.5
+sphinx-design>=0.6
 linkify-it-py>=2.0
