@@ -203,23 +203,6 @@ categories, caches the histories under `paper/_cache_*.pkl`, and writes every
 figure (`paper/figures/`) and LaTeX table (`paper/tables/`) referenced by
 `paper/main.tex`. Total runtime on a recent laptop CPU is under 30 minutes.
 
-## Issues
-
-Track issues at [github.com/quant-sci/graphnetz/issues](https://github.com/quant-sci/graphnetz/issues).
-
-## Citation
-
-If GraphNetz is useful in your work, please cite the accompanying paper:
-
-```bibtex
-@article{dacosta2026graphnetz,
-  title   = {GraphNetz: A Statistical-Reporting Layer for Graph Neural Network Benchmarks},
-  author  = {da Costa, Kleyton and Modenesi, Bernardo},
-  journal = {arXiv preprint},
-  year    = {2026}
-}
-```
-
 ## Contributing
 
 Pull requests welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first — the
