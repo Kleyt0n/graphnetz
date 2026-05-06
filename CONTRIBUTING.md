@@ -37,8 +37,8 @@ PYTHONPATH=src uv run python examples/experiment.py  # regenerate paper figures
 2. Add a thin loader function that returns a PyG dataset. Keep it stateless,
    one network per call. Examples in `social.py` and `biology.py`.
 3. Register it in `LOADER_REGISTRY` (in `src/graphnetz/datasets/__init__.py`)
-   under each task kind it can serve. A single loader may appear under
-   multiple kinds (Cora is both `node_cls` and `link_pred`).
+   under each task it can serve. A single loader may appear under
+   multiple tasks (Cora is both `node_cls` and `link_pred`).
 4. If the loader is appropriate for the curated benchmark, add a `Task(...)`
    to `BENCHMARK_TASKS` in `src/graphnetz/benchmark.py` and pick an epoch
    budget that converges on a laptop.
@@ -47,13 +47,13 @@ PYTHONPATH=src uv run python examples/experiment.py  # regenerate paper figures
 
 ## Adding a model
 
-The benchmark dispatches by *task kind*, not by model name, so models declare
-which kinds they support.
+The benchmark dispatches by *task*, not by model name, so models declare
+which tasks they support.
 
 ```python
 from graphnetz import register_model
 
-@register_model(kinds={"node_cls", "graph_cls"})
+@register_model(task_type={"node_cls", "graph_cls"})
 class MyGNN(torch.nn.Module):
     def __init__(self, in_channels, hidden_channels, out_channels):
         ...
@@ -64,20 +64,20 @@ For non-standard signatures, pass a `factory=` callable to `register_model`.
 
 If the model is a node-level encoder that should also work as a
 graph-classifier, regressor, or link-predictor, prefer wrapping it with
-`graphnetz.benchmark._multi_kind_factory` rather than maintaining a separate
-implementation per kind.
+`graphnetz.benchmark._multi_task_factory` rather than maintaining a separate
+implementation per task.
 
-## Adding a task kind
+## Adding a task type
 
-Adding a new kind (e.g. `node_reg`, `temporal`) is a four-step change:
+Adding a new task type (e.g. `node_reg`, `temporal`) is a four-step change:
 
-1. Append it to `TASK_KINDS` in `benchmark.py`.
+1. Append it to `TASK_TYPES` in `benchmark.py`.
 2. Add a training routine in `training.py` returning a per-epoch metric dict.
 3. Add an adapter in `models/_adapters.py` if node-level encoders should
-   plug into the new kind via the multi-kind factory.
+   plug into the new task via the multi-task factory.
 4. Extend `_run_task` in `benchmark.py` with the dispatch branch.
 
-Document the new kind in the README's *Task kinds* table.
+Document the new task in the README's *Task* table.
 
 ## Adding a statistical test
 
@@ -124,5 +124,5 @@ listed in `pyproject.toml` instead of a public issue.
 
 ## Code of conduct
 
-Be kind, be specific, attack the code not the person. The maintainers reserve
+Be specific, attack the code not the person. The maintainers reserve
 the right to close threads that drift outside that.

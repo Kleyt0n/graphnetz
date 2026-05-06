@@ -52,7 +52,7 @@ report = run_benchmark(
     "social",
     {"GCN": GCN, "GAT": GAT, "GraphSAGE": GraphSAGE},
     seeds=range(10),
-    kind="node_cls",
+    task_type="node_cls",
 )
 
 print(report.summary())          # per-(task, model) mean ± t-CI
@@ -97,7 +97,7 @@ same statistical pipeline as the built-ins.
 
 | | |
 |---|---|
-| **Task kinds** | `node_cls` · `graph_cls` · `graph_reg` · `link_pred` |
+| **Tasks** | `node_cls` · `graph_cls` · `graph_reg` · `link_pred` |
 | **Architectures** | GCN · GAT · GIN · GraphSAGE · GraphTransformer (DGI as a pre-training utility) |
 | **Loaders** | 63 across 10 categories (combinatorial, biology, social, knowledge, infrastructure, finance, computing, vision, physics, security) |
 | **Default report** | per-cell mean ± Student's-*t* CI · Holm-adjusted paired *t* · Demšar/Nemenyi CD |
@@ -116,7 +116,7 @@ same statistical pipeline as the built-ins.
 
 **Reference**
 - [API reference](api/index) — modules, classes, and functions.
-- [Contributing](contributing.md) — add a loader, a model, or a new task kind.
+- [Contributing](contributing.md) — add a loader, a model, or a new task.
 
 ```{toctree}
 :maxdepth: 2

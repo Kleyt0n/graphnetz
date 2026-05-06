@@ -1,6 +1,6 @@
 # Dataset taxonomy
 
-GraphNetz organises **63 loaders across 10 scientific categories**, each declaring the task kinds it can serve. The taxonomy is the single source of truth: the curated benchmark, the per-category notebooks, and the documented loader names all derive from {py:data}`graphnetz.datasets.LOADER_REGISTRY`.
+GraphNetz organises **63 loaders across 10 scientific categories**, each declaring the task types it can serve. The taxonomy is the single source of truth: the curated benchmark, the per-category notebooks, and the documented loader names all derive from {py:data}`graphnetz.datasets.LOADER_REGISTRY`.
 
 ```python
 from graphnetz.datasets import LOADER_REGISTRY, list_datasets
@@ -9,9 +9,9 @@ list_datasets(category="biology")
 # {'biology': {'graph_cls': [...], 'graph_reg': [...], 'node_cls': [...], 'link_pred': [...]}}
 ```
 
-## Task kinds
+## Tasks
 
-Every cell in the benchmark — `(category, task_kind, dataset, model, seed)` —
+Every cell in the benchmark — `(category, task_type, dataset, model, seed)` —
 maps to one of four task families. The default metric for each is what the
 report headlines:
 
@@ -31,7 +31,7 @@ is no self-supervised pretext loss in the headline report.
 
 ## Categories
 
-| Category | # | Task kinds | Loaders |
+| Category | # | Tasks | Loaders |
 |---|---:|---|---|
 | **Combinatorial** | 6 | LP | random TSP, VRP, max-flow, bipartite matching, coloring, max-cut |
 | **Biology** | 12 | GC · GR · LP | MUTAG, PROTEINS, ENZYMES, Peptides-func/struct, PPI, *C. elegans*, Budapest connectome, hospital / high-school contacts, ogbg-molhiv†, ogbg-molpcba† |
@@ -122,6 +122,6 @@ See [Contributing → Adding a dataset loader](contributing.md#adding-a-dataset-
 The short version:
 
 1. Write a thin loader function under the right category module.
-2. Register it in `LOADER_REGISTRY` for each task kind it supports.
+2. Register it in `LOADER_REGISTRY` for each task it supports.
 3. Optionally add a `Task(...)` to `BENCHMARK_TASKS` for the curated run.
 4. Add a one-line smoke test in `tests/test_smoke.py`.

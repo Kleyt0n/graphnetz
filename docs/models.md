@@ -1,14 +1,14 @@
 # Models & adapters
 
 GraphNetz follows a simple rule: **a node-level encoder should run on every
-task kind without rewriting code**. The five built-in architectures plug into
+task without rewriting code**. The five built-in architectures plug into
 node classification, graph classification, graph regression, and link
 prediction through three small adapter wrappers; GIN keeps its native
 graph-level pooling.
 
 ## Built-in architectures
 
-| Model | Supported kinds | Reference |
+| Model | Supported tasks | Reference |
 |---|---|---|
 | {py:class}`~graphnetz.models.GCN` | all four | Kipf & Welling, ICLR 2017 |
 | {py:class}`~graphnetz.models.GAT` | all four | Veličković et al., ICLR 2018 |
@@ -24,11 +24,11 @@ runner routes unlabelled graphs through `link_pred` (a real edge-split AUC)
 instead of DGI loss.
 ```
 
-## Task-kind adapters
+## Task type adapters
 
 Three thin wrappers make a node-level encoder fluent in every task family.
 The benchmark dispatcher picks the right one automatically based on the
-chosen `kind`:
+chosen `task_type`:
 
 ```{eval-rst}
 .. autoclass:: graphnetz.models._adapters.GraphLevelWrapper
@@ -45,12 +45,12 @@ encoder for you:
 ```python
 from graphnetz import GAT
 model = GAT(in_channels=8, hidden_channels=64, out_channels=4)
-# run_benchmark wraps `model` in the right adapter for the requested kind.
+# run_benchmark wraps `model` in the right adapter for the requested task type.
 ```
 
 ## Custom models
 
-Models declare which task kinds they support and the dispatcher skips
+Models declare which task types they support and the dispatcher skips
 incompatible *(model, task)* pairs. Three integration paths cover the common
 cases:
 
@@ -63,7 +63,7 @@ call by name:
 import torch
 from graphnetz import register_model
 
-@register_model(kinds={"node_cls", "graph_cls"})
+@register_model(task_type={"node_cls", "graph_cls"})
 class MyGNN(torch.nn.Module):
     def __init__(self, in_channels, hidden_channels, out_channels):
         super().__init__()
@@ -76,7 +76,7 @@ If you'd rather not depend on `register_model` at import time:
 
 ```python
 class MyGNN(torch.nn.Module):
-    task_kinds = {"node_cls", "graph_cls"}
+    task_types = {"node_cls", "graph_cls"}
     ...
 ```
 
@@ -97,20 +97,20 @@ run_benchmark(
 )
 ```
 
-### Multi-kind factory
+### Multi task factory
 
-For a node-level encoder that should work across **all four** task kinds
+For a node-level encoder that should work across **all four** task types
 without you writing the adapter glue:
 
 ```python
-from graphnetz.benchmark import _multi_kind_factory, register_model
+from graphnetz.benchmark import _multi_task_factory, register_model
 
 class MyEncoder(torch.nn.Module):
     """Returns per-node embeddings of shape [N, hidden_channels]."""
     ...
 
 _ALL_KINDS = {"node_cls", "graph_cls", "graph_reg", "link_pred"}
-register_model(MyEncoder, kinds=_ALL_KINDS, factory=_multi_kind_factory(MyEncoder))
+register_model(MyEncoder, task_dict=_ALL_KINDS, factory=_multi_task_factory(MyEncoder))
 ```
 
 ## Choosing an integration path
@@ -118,6 +118,6 @@ register_model(MyEncoder, kinds=_ALL_KINDS, factory=_multi_kind_factory(MyEncode
 | Scenario | Use |
 |---|---|
 | You're publishing a new architecture | **Decorator** — clean import surface, name-based discovery |
-| You're benchmarking someone else's encoder | **Class attribute** — no edits to upstream code beyond adding `task_kinds` |
+| You're benchmarking someone else's encoder | **Class attribute** — no edits to upstream code beyond adding `task_types` |
 | You're sweeping over hyperparameters | **Inline tuple** — one factory per variant in the same `run_benchmark` call |
-| You have a node-level encoder that should run everywhere | **Multi-kind factory** — `_multi_kind_factory(cls)` does the wrapping |
+| You have a node-level encoder that should run everywhere | **Multi-task factory** — `_multi_task_factory(cls)` does the wrapping |

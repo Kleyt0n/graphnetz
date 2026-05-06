@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT / "src"))
 # --------------------------------------------------------------------------- #
 project = "GraphNetz"
 author = "Kleyton da Costa"
-copyright = f"{datetime.now():%Y}, {author}"  # noqa: A001 (Sphinx requires this name)
+copyright = f"{datetime.now():%Y}, {author}"
 
 try:
     from graphnetz.__about__ import __version__ as release

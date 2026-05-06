@@ -28,8 +28,8 @@ Most GNN benchmarks report point-estimate accuracies on a handful of citation gr
 The catalogue is organised along a **category × task** taxonomy: 
 
 - 63 dataset loaders across 10 scientific categories
-- 4 task kinds (node classification, graph classification, graph regression, link prediction)
-- 5 canonical architectures (GCN, GAT, GIN, GraphSAGE, Graph Transformer) plug into every kind via a small set of task-kind adapters;
+- 4 task types (node classification, graph classification, graph regression, link prediction)
+- 5 canonical architectures (GCN, GAT, GIN, GraphSAGE, Graph Transformer) plug into every tasl via a small set of task adapters;
 
 ## Install
 
@@ -70,14 +70,14 @@ report = run_benchmark(
     "social",
     {"GCN": GCN, "GAT": GAT, "GraphSAGE": GraphSAGE, "GraphTransformer": GraphTransformer},
     seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-    kind="node_cls",          # restrict to one task family
+    task_type="node_cls",          # restrict to one task family
 )
 print(report.summary())       # per-(task, model) mean ± t-CI
 print(report.pairwise())      # Holm-corrected paired t-tests (or Wilcoxon)
 fig, _ = report.plot_critical_difference(alpha=0.05)
 ```
 
-## Task kinds
+## Tasks
 
 | Kind | Symbol | Metric | Examples |
 |---|---|---|---|
@@ -93,7 +93,7 @@ every cell carries a real test-time metric — there is no self-supervised
 
 ## Dataset categories
 
-| Category | # | Task kinds | Loaders |
+| Category | # | Tasks | Loaders |
 |---|---:|---|---|
 | Combinatorial | 6 | LP | random TSP, VRP, max-flow, bipartite matching, coloring, max-cut |
 | Biology | 12 | GC, GR, LP | MUTAG, PROTEINS, ENZYMES, Peptides-func/struct, PPI, C. elegans, Budapest connectome, hospital/high-school contacts, ogbg-molhiv†, ogbg-molpcba† |
@@ -144,7 +144,7 @@ ds = Netz(root="data", dataset_name="urban_streets", network_name="brasilia")
 | `GraphTransformer` | all four | Shi et al., 2021 |
 | `DGI` | *(utility)* | Veličković et al., ICLR 2019 |
 
-Node-level encoders enter every task kind through three small adapters:
+Node-level encoders enter every task through three small adapters:
 graph-level pooling head, dot-product link-prediction head, and the DGI
 self-supervised wrapper for optional unsupervised pre-training.
 
@@ -154,13 +154,13 @@ self-supervised wrapper for optional unsupervised pre-training.
 from graphnetz import register_model
 
 # 1. Decorator
-@register_model(kinds="node_cls")
+@register_model(task_type="node_cls")
 class MyGNN(torch.nn.Module):
     def __init__(self, in_channels, hidden_channels, out_channels): ...
 
 # 2. Class attribute (no decorator)
 class MyGNN(torch.nn.Module):
-    task_kinds = {"node_cls", "graph_cls"}
+    task_types = {"node_cls", "graph_cls"}
 
 # 3. Inline tuple at run-time
 run_benchmark(

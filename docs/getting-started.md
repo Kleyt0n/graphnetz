@@ -60,7 +60,7 @@ report = run_benchmark(
     "social",
     {"GCN": GCN, "GAT": GAT, "GraphSAGE": GraphSAGE, "GraphTransformer": GraphTransformer},
     seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-    kind="node_cls",
+    task_type="node_cls",
 )
 
 print(report.summary())          # per-(task, model) mean ± t-CI
@@ -69,16 +69,15 @@ fig, _ = report.plot_critical_difference(alpha=0.05)
 report.to_latex("results.tex")   # publication-ready table
 ```
 
-The same call works for any category and task family: pass `kind="graph_cls"`
-to benchmark on graph classification, `kind="link_pred"` for link
+The same call works for any category and task family: pass `task_type="graph_cls"`
+to benchmark on graph classification, `task_type="link_pred"` for link
 prediction, and so on. Pass `only=[task_name, ...]` to restrict to specific
 loaders.
 
 ## Plug in your own model
 
 Custom models go through the same statistical pipeline as the built-ins —
-multi-seed, Holm-corrected, CD-diagrammed — once they declare which task
-kinds they support. Three integration paths cover the common cases:
+multi-seed, Holm-corrected, CD-diagrammed — once they declare which task they support. Three integration paths cover the common cases:
 
 **Decorator** — permanent registration at import time. Best for libraries
 or shared modules:
@@ -88,7 +87,7 @@ import torch
 from torch_geometric.nn import GCNConv
 from graphnetz import register_model
 
-@register_model(kinds={"node_cls"})
+@register_model(task_type={"node_cls"})
 class MyGNN(torch.nn.Module):
     def __init__(self, in_channels, hidden_channels, out_channels):
         super().__init__()
@@ -99,14 +98,14 @@ class MyGNN(torch.nn.Module):
         x, ei = data.x, data.edge_index
         return self.conv2(torch.relu(self.conv1(x, ei)), ei)
 
-run_benchmark("social", {"MyGNN": MyGNN}, kind="node_cls", seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+run_benchmark("social", {"MyGNN": MyGNN}, task_type="node_cls", seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
 ```
 
 **Class attribute** — same effect, no decorator dependency:
 
 ```python
 class MyGNN(torch.nn.Module):
-    task_kinds = {"node_cls"}
+    task_types = {"node_cls"}
     ...
 ```
 
@@ -123,19 +122,19 @@ run_benchmark(
 )
 ```
 
-For node-level encoders that should run on **all four** task kinds without
+For node-level encoders that should run on **all four** task types without
 writing the adapter glue, see the
-[multi-kind factory](models.md#multi-kind-factory).
+[multi-tasks factory](models.md#multi-task-factory).
 
 ## Plug in your own dataset
 
 Custom datasets get the same statistical pipeline as the built-ins.
 The minimal contract is the standard PyG one — your dataset object exposes
-`ds[0]` returning a `Data`, plus the relevant attributes for the task kind
+`ds[0]` returning a `Data`, plus the relevant attributes for the task
 (`num_features`, `num_classes`, or `num_relations`).
 
 **Quickest path** — wrap an already-loaded dataset and pass it via
-`tasks=`:
+`task_dict=`:
 
 ```python
 from graphnetz import GCN, run_benchmark, task_from_dataset
@@ -146,12 +145,12 @@ ds = my_loader("data/my_dataset")
 task = task_from_dataset("my_dataset", "node_cls", ds, epochs=100)
 report = run_benchmark(
     models={"GCN": GCN},
-    tasks=[task],
+    task_dict=[task],
     seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 )
 ```
 
-No `BENCHMARK_TASKS` mutation, no global state — `tasks=` bypasses the
+No `BENCHMARK_TASKS` mutation, no global state — `task_dict=` bypasses the
 registry entirely. ``category`` defaults to ``"custom"`` for cache-path
 namespacing.
 
@@ -179,11 +178,11 @@ def my_loader(root: str, *, seed: int):
     return MySyntheticDataset(root, num_graphs=100, seed=seed)
 
 task = Task("synthetic_g100", "graph_cls", my_loader, epochs=20)
-report = run_benchmark(models={"GCN": GCN}, tasks=[task], seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+report = run_benchmark(models={"GCN": GCN}, task_dict=[task], seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
 ```
 
 ```{tip}
-The conventions for each task kind (which attributes the dataset must
+The conventions for each task (which attributes the dataset must
 expose, how splits are encoded) live in the trainer docstrings:
 {py:func}`graphnetz.train_node_classification`,
 {py:func}`graphnetz.train_graph_classification`,
@@ -199,12 +198,12 @@ expose, how splits are encoded) live in the trainer docstrings:
    Installing the optional `ogb` extra adds OGB datasets to the existing
    domain categories (e.g. `ogbn-arxiv` joins `social/node_cls`,
    `ogbg-molhiv` joins `biology/graph_cls`).
-2. **Pick a task kind.** `node_cls`, `graph_cls`, `graph_reg`, or
+2. **Pick a task.** `node_cls`, `graph_cls`, `graph_reg`, or
    `link_pred`. The runner skips models that don't declare support for the
-   chosen kind.
+   chosen task.
 3. **Pick architectures.** Any subset of the five built-ins, or your own —
    see [Models & adapters](models.md#custom-models).
-4. **Run.** `run_benchmark(category, models, kind=..., seeds=...)`. Use
+4. **Run.** `run_benchmark(category, models, task_type=..., seeds=...)`. Use
    `seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)` for the default reproducible 10-seed sweep.
 5. **Report.** Call `summary`, `pairwise`, `plot_critical_difference`,
    `plot_pairwise`, `plot_forest`, `plot_learning_curves`, `to_latex`,
@@ -218,4 +217,4 @@ expose, how splits are encoded) live in the trainer docstrings:
 - Read [Reading the report](report.md) to learn which plot or table answers
   which question.
 - Skim [Contributing](contributing.md) before adding a new loader, model,
-  or task kind so your additions thread through the same pipeline.
+  or task so your additions thread through the same pipeline.

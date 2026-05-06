@@ -38,8 +38,8 @@ uv run ruff check      # lint (must be clean before review)
 2. Write a thin loader function that returns a PyG dataset. Keep it
    stateless and one network per call. See `social.py` and `biology.py`
    for reference shapes.
-3. Register it in `LOADER_REGISTRY` under each task kind it can serve. A
-   single loader may appear under multiple kinds (e.g. `cora` is both
+3. Register it in `LOADER_REGISTRY` under each task it can serve. A
+   single loader may appear under multiple task types (e.g. `cora` is both
    `node_cls` and `link_pred`).
 4. If the loader is appropriate for the curated benchmark, add a
    `Task(...)` entry to `BENCHMARK_TASKS` in `benchmark.py` and pick an
@@ -49,13 +49,13 @@ uv run ruff check      # lint (must be clean before review)
 
 ## Adding a model
 
-The dispatcher routes by *task kind*, not by model name, so models declare
-which kinds they support up front:
+The dispatcher routes by *task*, not by model name, so models declare
+which task they support up front:
 
 ```python
 from graphnetz import register_model
 
-@register_model(kinds={"node_cls", "graph_cls"})
+@register_model(task_type={"node_cls", "graph_cls"})
 class MyGNN(torch.nn.Module):
     def __init__(self, in_channels, hidden_channels, out_channels):
         ...
@@ -63,23 +63,23 @@ class MyGNN(torch.nn.Module):
 
 The default factory calls `cls(in_channels, hidden_channels, out_channels)`.
 For non-standard signatures, pass a `factory=` callable. For node-level
-encoders that should plug into every task kind, prefer wrapping with
-{py:func}`graphnetz.benchmark._multi_kind_factory` rather than maintaining
-a separate implementation per kind.
+encoders that should plug into every task, prefer wrapping with
+{py:func}`graphnetz.benchmark._multi_task_factory` rather than maintaining
+a separate implementation per task type.
 
-## Adding a task kind
+## Adding a task
 
-Adding a new kind (e.g. `node_reg`, `temporal`) is a four-step change:
+Adding a new task (e.g. `node_reg`, `temporal`) is a four-step change:
 
-1. Append the new kind to `TASK_KINDS` in `benchmark.py`.
+1. Append the new task to `TASK_TYPES` in `benchmark.py`.
 2. Add a training routine in `training.py` returning a per-epoch metric
    dict (the existing trainers are the template).
 3. Add an adapter in `models/_adapters.py` if node-level encoders should
-   plug into the new kind via the multi-kind factory.
+   plug into the new task via the multi-task factory.
 4. Extend `_run_task` in `benchmark.py` with the dispatch branch.
 
-Then document the new kind in [Dataset taxonomy →
-Task kinds](datasets.md#task-kinds).
+Then document the new task in [Dataset taxonomy →
+Tasks](datasets.md#task-type).
 
 ## Adding a statistical test
 

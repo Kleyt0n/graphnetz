@@ -5,7 +5,7 @@
    :members:
 ```
 
-## Task-kind adapters
+## Task type adapters
 
 ```{eval-rst}
 .. automodule:: graphnetz.models._adapters

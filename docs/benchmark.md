@@ -12,7 +12,7 @@ five stages of that pipeline and how to drive it.
 | # | Stage | What happens |
 |---|---|---|
 | 1 | **Catalogue** | The chosen `category` is mapped to a list of curated tasks via {py:data}`graphnetz.benchmark.BENCHMARK_TASKS`. |
-| 2 | **Encoders** | Each model declares the task kinds it supports; incompatible *(model, task)* pairs are dropped before training. |
+| 2 | **Encoders** | Each model declares the task types it supports; incompatible *(model, task)* pairs are dropped before training. |
 | 3 | **Training** | For every $(t, m, s)$ triple the runner reseeds Python `random`, NumPy, Torch CPU, and Torch CUDA, then trains for $E$ epochs through the appropriate trainer. |
 | 4 | **Statistics** | Per-seed final metrics feed three reducers: per-cell mean ± CI, Holm-corrected paired *t*-tests (or Wilcoxon signed-rank) within each task, Friedman ranks + Nemenyi CD across tasks. |
 | 5 | **Report** | Histories, summaries, and one-call exporters live on the {py:class}`~graphnetz.benchmark.BenchmarkReport`. |
@@ -28,7 +28,7 @@ report = run_benchmark(
     category="social",
     models={"GCN": GCN, "GAT": GAT, "GraphSAGE": GraphSAGE, "GraphTransformer": GraphTransformer},
     seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-    kind="node_cls",          # restrict to one task family (optional)
+    task_type="node_cls",          # restrict to one task family (optional)
     epochs=100,               # override the per-task default (optional)
     only=["cora", "citeseer"],# subset of tasks (optional)
 )
@@ -38,7 +38,7 @@ A single class instead of a dict is also accepted — handy for one-off
 sanity checks:
 
 ```python
-run_benchmark("infrastructure", GAT, kind="link_pred")
+run_benchmark("infrastructure", GAT, task_type="link_pred")
 ```
 
 ```{tip}
