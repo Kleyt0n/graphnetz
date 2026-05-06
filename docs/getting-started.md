@@ -134,7 +134,7 @@ The minimal contract is the standard PyG one — your dataset object exposes
 (`num_features`, `num_classes`, or `num_relations`).
 
 **Quickest path** — wrap an already-loaded dataset and pass it via
-`task_dict=`:
+`tasks=`:
 
 ```python
 from graphnetz import GCN, run_benchmark, task_from_dataset
@@ -145,12 +145,12 @@ ds = my_loader("data/my_dataset")
 task = task_from_dataset("my_dataset", "node_cls", ds, epochs=100)
 report = run_benchmark(
     models={"GCN": GCN},
-    task_dict=[task],
+    tasks=[task],
     seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 )
 ```
 
-No `BENCHMARK_TASKS` mutation, no global state — `task_dict=` bypasses the
+No `BENCHMARK_TASKS` mutation, no global state — `tasks=` bypasses the
 registry entirely. ``category`` defaults to ``"custom"`` for cache-path
 namespacing.
 
@@ -178,7 +178,7 @@ def my_loader(root: str, *, seed: int):
     return MySyntheticDataset(root, num_graphs=100, seed=seed)
 
 task = Task("synthetic_g100", "graph_cls", my_loader, epochs=20)
-report = run_benchmark(models={"GCN": GCN}, task_dict=[task], seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+report = run_benchmark(models={"GCN": GCN}, tasks=[task], seeds=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
 ```
 
 ```{tip}

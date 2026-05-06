@@ -58,7 +58,7 @@ def test_task_from_dataset_runs_through_run_benchmark() -> None:
 
     report = run_benchmark(
         models={"GCN": GCN},
-        task_dict=[task],
+        tasks=[task],
         seeds=(0, 1),
         verbose=False,
     )
@@ -78,13 +78,13 @@ def test_run_benchmark_validates_task() -> None:
 
     bad = Task(name="bogus", task_type="not_a_task_type", loader=lambda _root: None, epochs=1)
     with pytest.raises(ValueError, match="unknown task type"):
-        run_benchmark(models={"GCN": GCN}, task_dict=[bad], seeds=(0,), verbose=False)
+        run_benchmark(models={"GCN": GCN}, tasks=[bad], seeds=(0,), verbose=False)
 
 
 def test_run_benchmark_requires_either_category_or_tasks() -> None:
     from graphnetz import GCN, run_benchmark
 
-    with pytest.raises(ValueError, match="either `category` or `task_dict="):
+    with pytest.raises(ValueError, match="either `category` or `tasks="):
         run_benchmark(models={"GCN": GCN}, seeds=(0,), verbose=False)
 
 
@@ -93,7 +93,7 @@ def test_run_benchmark_requires_models() -> None:
 
     task = task_from_dataset("x", "node_cls", _MiniNodeDataset(), epochs=1)
     with pytest.raises(ValueError, match="requires `models`"):
-        run_benchmark(task_dict=[task], seeds=(0,), verbose=False)
+        run_benchmark(tasks=[task], seeds=(0,), verbose=False)
 
 
 def test_register_task_and_unregister_round_trip() -> None:
@@ -152,7 +152,7 @@ def test_seed_aware_loader_receives_seed() -> None:
     task = Task(name="seed_aware", task_type="node_cls", loader=loader, epochs=1)
     run_benchmark(
         models={"GCN": GCN},
-        task_dict=[task],
+        tasks=[task],
         seeds=(7, 11),
         verbose=False,
     )

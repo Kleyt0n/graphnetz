@@ -110,7 +110,7 @@ class MyEncoder(torch.nn.Module):
     ...
 
 _ALL_KINDS = {"node_cls", "graph_cls", "graph_reg", "link_pred"}
-register_model(MyEncoder, task_dict=_ALL_KINDS, factory=_multi_task_factory(MyEncoder))
+register_model(MyEncoder, tasks=_ALL_KINDS, factory=_multi_task_factory(MyEncoder))
 ```
 
 ## Choosing an integration path

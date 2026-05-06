@@ -1754,7 +1754,7 @@ def run_benchmark(
 ) -> BenchmarkReport:
     """Run a benchmark across one or more (model, task, seed) combinations.
 
-    Two ways to choose task_dict
+    Two ways to choose tasks:
 
     1. **By category** (default) -- tasks come from
        :data:`BENCHMARK_TASKS` indexed as
