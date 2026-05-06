@@ -16,6 +16,9 @@
 
 ## Why GraphNetz
 
+Whether you are proposing a new GNN architecture, testing a model on a new graph domain, or comparing existing methods across graph types, GraphNetz turns the usual “train, evaluate, table of accuracies” workflow into a reproducible statistical report. Instead of reporting point estimates alone, it provides confidence intervals for each result, paired model comparisons with multiple-testing correction, and rank-based summaries across datasets using critical-difference diagrams. The goal is not just to crown a leaderboard winner, but to give researchers a principled way to quantify uncertainty, compare methods fairly, and produce the exact evidence reviewers often ask for in graph-learning papers.
+
+
 Most GNN benchmarks report point-estimate accuracies on a handful of citation graphs and declare a winner without confidence intervals, multiple-comparison correction, or rank aggregation across datasets. GraphNetz's default output is a **structured statistical report**, not a raw accuracy table:
 
 - multi-seed Student's *t* confidence intervals per cell,
