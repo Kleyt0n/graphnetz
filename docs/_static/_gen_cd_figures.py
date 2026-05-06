@@ -32,9 +32,7 @@ TASK_MEANS = {
 def _histories():
     histories = {}
     for task, model_means in TASK_MEANS.items():
-        histories[task] = {
-            model: [{"test_acc": [acc]} for _ in range(5)] for model, acc in model_means.items()
-        }
+        histories[task] = {model: [{"test_acc": [acc]} for _ in range(5)] for model, acc in model_means.items()}
     return histories
 
 

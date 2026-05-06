@@ -368,7 +368,10 @@ def iter_benchmark_tasks(
 
     Examples
     --------
-    >>> [t.name for t in iter_benchmark_tasks(category="biology", task_type="graph_cls")]
+    >>> [
+    ...     t.name
+    ...     for t in iter_benchmark_tasks(category="biology", task_type="graph_cls")
+    ... ]
     ['mutag', 'proteins']
     """
     cats = [category] if category is not None else list(BENCHMARK_TASKS)
@@ -1805,9 +1808,9 @@ def run_benchmark(
     tasks = task_list  # the loop below treats this as the working list
 
     histories: dict[str, dict[str, list[dict[str, list[float]]]]] = {}
-    total_combinations = sum(1 for spec in resolved.values() for task in tasks if task.task_type in spec.task_type) * len(
-        seed_list
-    )
+    total_combinations = sum(
+        1 for spec in resolved.values() for task in tasks if task.task_type in spec.task_type
+    ) * len(seed_list)
     overall_pbar = tqdm(
         total=total_combinations,
         desc="Benchmark",
