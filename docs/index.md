@@ -13,7 +13,7 @@ hide-toc: true
 
 **A GNN benchmark whose default output is a statistical report, not a leaderboard.**
 
-GraphNetz turns the standard "train, eval, table of accuracies" loop into a reproducible pipeline that produces the artefacts a reviewer would otherwise ask for: confidence intervals on every cell, paired pairwise tests with multiple-comparison correction, and a Demšar critical-difference diagram across datasets.
+Whether you are proposing a new GNN architecture, testing a model on a new graph domain, or comparing existing methods across graph types, GraphNetz turns the usual “train, evaluate, table of accuracies” workflow into a reproducible statistical report. Instead of reporting point estimates alone, it provides confidence intervals for each result, paired model comparisons with multiple-testing correction, and rank-based summaries across datasets using critical-difference diagrams. The goal is not just to crown a leaderboard winner, but to give researchers a principled way to quantify uncertainty, compare methods fairly, and produce the exact evidence reviewers often ask for in graph-learning papers.
 
 ```{figure} _static/critical_difference.png
 :alt: Demšar critical-difference diagram comparing four GNN architectures by mean rank.
