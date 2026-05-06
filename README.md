@@ -218,6 +218,20 @@ uv run pytest
 uv run ruff check
 ```
 
+## Citation
+
+If GraphNetz is useful in your work, please cite the accompanying paper:
+
+```bibtex
+@article{dacosta2026graphnetz,
+  title   = {GraphNetz: Statistical Benchmarking of Graph Neural Networks with Paired Tests and Rank Aggregation},
+  author  = {da Costa, Kleyton and Modenesi, Bernardo},
+  journal = {arXiv preprint},
+  year    = {2026},
+  url = {}
+}
+```
+
 ## License
 
 MIT — see [`LICENCE.txt`](LICENCE.txt).
