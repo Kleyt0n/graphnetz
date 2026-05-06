@@ -58,7 +58,7 @@ def test_task_from_dataset_runs_through_run_benchmark() -> None:
 
     report = run_benchmark(
         models={"GCN": GCN},
-        tasks=[task],
+        task_dict=[task],
         seeds=(0, 1),
         verbose=False,
     )
@@ -72,19 +72,19 @@ def test_task_from_dataset_runs_through_run_benchmark() -> None:
     assert summary.loc[("karate_mini", "GCN"), "n_seeds"] == 2
 
 
-def test_run_benchmark_validates_task_kind() -> None:
+def test_run_benchmark_validates_task() -> None:
     from graphnetz import GCN, run_benchmark
     from graphnetz.benchmark import Task
 
-    bad = Task(name="bogus", kind="not_a_kind", loader=lambda _root: None, epochs=1)
-    with pytest.raises(ValueError, match="unknown kind"):
-        run_benchmark(models={"GCN": GCN}, tasks=[bad], seeds=(0,), verbose=False)
+    bad = Task(name="bogus", task_type="not_a_task_type", loader=lambda _root: None, epochs=1)
+    with pytest.raises(ValueError, match="unknown task type"):
+        run_benchmark(models={"GCN": GCN}, task_dict=[bad], seeds=(0,), verbose=False)
 
 
 def test_run_benchmark_requires_either_category_or_tasks() -> None:
     from graphnetz import GCN, run_benchmark
 
-    with pytest.raises(ValueError, match="either `category` or `tasks="):
+    with pytest.raises(ValueError, match="either `category` or `task_dict="):
         run_benchmark(models={"GCN": GCN}, seeds=(0,), verbose=False)
 
 
@@ -93,7 +93,7 @@ def test_run_benchmark_requires_models() -> None:
 
     task = task_from_dataset("x", "node_cls", _MiniNodeDataset(), epochs=1)
     with pytest.raises(ValueError, match="requires `models`"):
-        run_benchmark(tasks=[task], seeds=(0,), verbose=False)
+        run_benchmark(task_dict=[task], seeds=(0,), verbose=False)
 
 
 def test_register_task_and_unregister_round_trip() -> None:
@@ -149,10 +149,10 @@ def test_seed_aware_loader_receives_seed() -> None:
         seeds_seen.append(seed)
         return base_ds
 
-    task = Task(name="seed_aware", kind="node_cls", loader=loader, epochs=1)
+    task = Task(name="seed_aware", task_type="node_cls", loader=loader, epochs=1)
     run_benchmark(
         models={"GCN": GCN},
-        tasks=[task],
+        task_dict=[task],
         seeds=(7, 11),
         verbose=False,
     )

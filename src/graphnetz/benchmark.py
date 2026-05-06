@@ -12,22 +12,22 @@ Custom models are plugged in via the same three paths as before:
        from graphnetz import register_model
 
 
-       @register_model(kinds="node_cls")
+       @register_model(task_type="node_cls")
        class MyGNN(torch.nn.Module):
            def __init__(self, in_channels, hidden_channels, out_channels): ...
 
 2. **Class attribute**::
 
        class MyGNN(torch.nn.Module):
-           task_kinds = {"node_cls"}
+           task_types = {"node_cls"}
 
-3. **Inline tuple** ``(cls, kinds)`` or ``(cls, kinds, factory)`` in the
+3. **Inline tuple** ``(cls, tasks)`` or ``(cls, tasks, factory)`` in the
    ``models`` mapping::
 
        run_benchmark("social", {"MyGNN": (MyGNN, "node_cls")})
 
 The default factory calls ``cls(in_channels, hidden_channels, out_channels)``;
-DGI-kind models receive ``(in_channels, hidden_channels)`` (the third argument
+DGI-task models receive ``(in_channels, hidden_channels)`` (the third argument
 is dropped).
 """
 
@@ -71,13 +71,13 @@ from graphnetz.training import (
 
 _HAS_OGB = importlib.util.find_spec("ogb") is not None
 
-# DGI is intentionally not a task kind: it is a self-supervised training
+# DGI is intentionally not a task task_type: it is a self-supervised training
 # objective whose "metric" is its own loss, so it cannot serve as a
 # held-out evaluation. ``train_dgi`` and the ``DGIWrapper`` adapter remain
 # available as utilities for users who want to pre-train an encoder
 # unsupervised; the benchmark routes unlabelled graphs through
 # ``link_pred`` instead (a real held-out edge split with an AUC metric).
-TASK_KINDS: frozenset[str] = frozenset({"node_cls", "graph_cls", "graph_reg", "link_pred"})
+TASK_TYPES: frozenset[str] = frozenset({"node_cls", "graph_cls", "graph_reg", "link_pred"})
 _METRIC_KEYS: tuple[str, ...] = (
     "test_acc",
     "test_auc",
@@ -95,10 +95,10 @@ _LOWER_IS_BETTER: frozenset[str] = frozenset({"val_mae", "train_loss"})
 
 @dataclass(frozen=True)
 class Task:
-    """A single benchmark task: a dataset loader plus its training kind."""
+    """A single benchmark task_type: a dataset loader plus its training task."""
 
     name: str
-    kind: str
+    task_type: str
     # ``...`` admits seed-aware loaders ``f(root, *, seed=...)`` alongside
     # the basic ``f(root)`` shape — the dispatcher inspects the signature
     # and threads ``seed`` through when present.
@@ -108,10 +108,10 @@ class Task:
 
 @dataclass(frozen=True)
 class ModelSpec:
-    """How to instantiate a model and which task kinds it supports."""
+    """How to instantiate a model and which task tasks it supports."""
 
     cls: type
-    kinds: frozenset[str] = field(default_factory=frozenset)
+    task_type: frozenset[str] = field(default_factory=frozenset)
     factory: Callable[..., torch.nn.Module] | None = None
 
     def build(
@@ -120,14 +120,14 @@ class ModelSpec:
         hidden_channels: int,
         out_channels: int,
         *,
-        kind: str = "node_cls",
+        task_type: str = "node_cls",
     ) -> torch.nn.Module:
         if self.factory is not None:
             try:
-                return self.factory(in_channels, hidden_channels, out_channels, kind=kind)
+                return self.factory(in_channels, hidden_channels, out_channels, task_type=task_type)
             except TypeError:
                 return self.factory(in_channels, hidden_channels, out_channels)
-        if kind == "dgi":
+        if task_type == "dgi":
             return self.cls(in_channels, hidden_channels)
         return self.cls(in_channels, hidden_channels, out_channels)
 
@@ -138,29 +138,29 @@ _REGISTRY: dict[type, ModelSpec] = {}
 def register_model(
     cls: type | None = None,
     *,
-    kinds: str | Iterable[str],
+    task_type: str | Iterable[str],
     factory: Callable[..., torch.nn.Module] | None = None,
 ) -> Callable[[type], type] | type:
     """Register a model with the benchmark dispatcher.
 
-    Usable as a decorator (``@register_model(kinds="node_cls")``) or as a
-    plain function (``register_model(MyGNN, kinds={"graph_cls", "graph_reg"})``).
+    Usable as a decorator (``@register_model(task_type="node_cls")``) or as a
+    plain function (``register_model(MyGNN, task_type={"graph_cls", "graph_reg"})``).
     """
-    ks = frozenset({kinds} if isinstance(kinds, str) else kinds)
-    unknown = ks - TASK_KINDS
+    tasks = frozenset({task_type} if isinstance(task_type, str) else task_type)
+    unknown = tasks - TASK_TYPES
     if unknown:
-        msg = f"Unknown task kinds: {sorted(unknown)}; allowed: {sorted(TASK_KINDS)}"
+        msg = f"Unknown task {sorted(unknown)}; allowed: {sorted(TASK_TYPES)}"
         raise ValueError(msg)
 
     def _register(target: type) -> type:
-        _REGISTRY[target] = ModelSpec(cls=target, kinds=ks, factory=factory)
+        _REGISTRY[target] = ModelSpec(cls=target, task_type=tasks, factory=factory)
         return target
 
     return _register(cls) if cls is not None else _register
 
 
-def _multi_kind_factory(encoder_cls: type) -> Callable[..., torch.nn.Module]:
-    """Adapt a node-level encoder to any of the four task kinds.
+def _multi_task_factory(encoder_cls: type) -> Callable[..., torch.nn.Module]:
+    """Adapt a node-level encoder to any of the four tasks.
 
     For ``node_cls`` the encoder is built with the dataset's class count
     as ``out_channels`` and used directly. For ``graph_cls`` and
@@ -176,33 +176,33 @@ def _multi_kind_factory(encoder_cls: type) -> Callable[..., torch.nn.Module]:
         hidden_channels: int,
         out_channels: int,
         *,
-        kind: str = "node_cls",
+        task_type: str = "node_cls",
     ) -> torch.nn.Module:
-        if kind == "node_cls":
+        if task_type == "node_cls":
             return encoder_cls(in_channels, hidden_channels, out_channels)
-        if kind in ("graph_cls", "graph_reg"):
+        if task_type in ("graph_cls", "graph_reg"):
             encoder = encoder_cls(in_channels, hidden_channels, hidden_channels)
             return GraphLevelWrapper(encoder, hidden_channels, out_channels)
-        if kind == "link_pred":
+        if task_type == "link_pred":
             encoder = encoder_cls(in_channels, hidden_channels, hidden_channels)
             return LinkPredWrapper(encoder)
-        msg = f"Unknown task kind: {kind}"
+        msg = f"Unknown task task_type: {task_type!r}; choices: {sorted(TASK_TYPES)}"
         raise ValueError(msg)
 
     return factory
 
 
 # Pre-register built-ins. Node-level encoders are registered for every
-# task kind via the multi-kind factory; GIN keeps its native graph-level
+# task task via the multi-task factory; GIN keeps its native graph-level
 # pooling. ``DGI`` is intentionally not registered: it is exposed as a
 # self-supervised training utility (``train_dgi`` + ``DGIWrapper``)
 # rather than a benchmark-task model.
-_ALL_KINDS = frozenset({"node_cls", "graph_cls", "graph_reg", "link_pred"})
-register_model(GCN, kinds=_ALL_KINDS, factory=_multi_kind_factory(GCN))
-register_model(GAT, kinds=_ALL_KINDS, factory=_multi_kind_factory(GAT))
-register_model(GraphSAGE, kinds=_ALL_KINDS, factory=_multi_kind_factory(GraphSAGE))
-register_model(GraphTransformer, kinds=_ALL_KINDS, factory=_multi_kind_factory(GraphTransformer))
-register_model(GIN, kinds={"graph_cls", "graph_reg"})
+_ALL_TASKS = frozenset({"node_cls", "graph_cls", "graph_reg", "link_pred"})
+register_model(GCN, task_type=_ALL_TASKS, factory=_multi_task_factory(GCN))
+register_model(GAT, task_type=_ALL_TASKS, factory=_multi_task_factory(GAT))
+register_model(GraphSAGE, task_type=_ALL_TASKS, factory=_multi_task_factory(GraphSAGE))
+register_model(GraphTransformer, task_type=_ALL_TASKS, factory=_multi_task_factory(GraphTransformer))
+register_model(GIN, task_type={"graph_cls", "graph_reg"})
 
 
 def _spec_from(value: type | tuple[Any, ...] | ModelSpec) -> ModelSpec:
@@ -211,24 +211,24 @@ def _spec_from(value: type | tuple[Any, ...] | ModelSpec) -> ModelSpec:
         return value
     if isinstance(value, tuple):
         cls = value[0]
-        kinds = value[1] if len(value) >= 2 else None
+        tasks = value[1] if len(value) >= 2 else None
         factory = value[2] if len(value) >= 3 else None
-        if kinds is None:
+        if tasks is None:
             base = _spec_from(cls)
-            return ModelSpec(cls=base.cls, kinds=base.kinds, factory=factory or base.factory)
-        ks = frozenset({kinds} if isinstance(kinds, str) else kinds)
-        unknown = ks - TASK_KINDS
+            return ModelSpec(cls=base.cls, task_type=base.task_type, factory=factory or base.factory)
+        ks = frozenset({tasks} if isinstance(tasks, str) else tasks)
+        unknown = ks - TASK_TYPES
         if unknown:
-            msg = f"Unknown task kinds: {sorted(unknown)}; allowed: {sorted(TASK_KINDS)}"
+            msg = f"Unknown task task_type {sorted(unknown)}; allowed: {sorted(TASK_TYPES)}"
             raise ValueError(msg)
-        return ModelSpec(cls=cls, kinds=ks, factory=factory)
+        return ModelSpec(cls=cls, task_type=ks, factory=factory)
     if value in _REGISTRY:
         return _REGISTRY[value]
-    if hasattr(value, "task_kinds"):
-        return ModelSpec(cls=value, kinds=frozenset(value.task_kinds))
-    if hasattr(value, "task_kind"):
-        return ModelSpec(cls=value, kinds=frozenset({value.task_kind}))
-    return ModelSpec(cls=value, kinds=frozenset())
+    if hasattr(value, "task_types"):
+        return ModelSpec(cls=value, task_type=frozenset(value.task_types))
+    if hasattr(value, "task"):
+        return ModelSpec(cls=value, task_type=frozenset({value.task}))
+    return ModelSpec(cls=value, task_type=frozenset())
 
 
 # --------------------------------------------------------------------------- #
@@ -362,21 +362,21 @@ if _HAS_OGB:
 
 def iter_benchmark_tasks(
     category: str | None = None,
-    kind: str | None = None,
+    task_type: str | None = None,
 ) -> list[Task]:
-    """Flatten ``BENCHMARK_TASKS`` to a list, optionally filtered by category/kind.
+    """Flatten ``BENCHMARK_TASKS`` to a list, optionally filtered by category/task.
 
     Examples
     --------
-    >>> [t.name for t in iter_benchmark_tasks(category="biology", kind="graph_cls")]
+    >>> [t.name for t in iter_benchmark_tasks(category="biology", task_type="graph_cls")]
     ['mutag', 'proteins']
     """
     cats = [category] if category is not None else list(BENCHMARK_TASKS)
     out: list[Task] = []
     for c in cats:
         per_cat = BENCHMARK_TASKS.get(c, {})
-        kinds = [kind] if kind is not None else list(per_cat)
-        for k in kinds:
+        tasks = [task_type] if task_type is not None else list(per_cat)
+        for k in tasks:
             out.extend(per_cat.get(k, []))
     return out
 
@@ -388,53 +388,53 @@ def iter_benchmark_tasks(
 
 def task_from_dataset(
     name: str,
-    kind: str,
+    task_type: str,
     dataset: Any,
     *,
     epochs: int = 30,
 ) -> Task:
     """Wrap an already-loaded dataset as a :class:`Task`.
 
-    The dataset must satisfy the conventions for ``kind``: a PyG dataset or
+    The dataset must satisfy the conventions for ``task``: a PyG dataset or
     any object exposing ``ds[0]`` plus the relevant attributes (``num_features``
     / ``num_classes`` / ``num_relations``). The benchmark dispatcher caches
     the dataset, so the same instance is reused across seeds without
     reloading.
     """
-    if kind not in TASK_KINDS:
-        msg = f"Unknown task kind {kind!r}; choices: {sorted(TASK_KINDS)}"
+    if task_type not in TASK_TYPES:
+        msg = f"Unknown task {task_type!r}; choices: {sorted(TASK_TYPES)}"
         raise ValueError(msg)
-    return Task(name=name, kind=kind, loader=lambda _root: dataset, epochs=epochs)
+    return Task(name=name, task_type=task_type, loader=lambda _root: dataset, epochs=epochs)
 
 
-def register_task(category: str, task: Task) -> None:
+def register_task(category: str, task_type: Task) -> None:
     """Register ``task`` under ``category`` in :data:`BENCHMARK_TASKS`.
 
     The task becomes visible to ``run_benchmark(category)`` and to
     :func:`iter_benchmark_tasks`. Use :func:`unregister_task` to remove it
     (e.g. in ``tearDown`` of a test).
     """
-    if not isinstance(task, Task):
-        msg = f"task must be a Task, got {type(task).__name__}"
+    if not isinstance(task_type, Task):
+        msg = f"task must be a Task, got {type(task_type).__name__}"
         raise TypeError(msg)
-    if task.kind not in TASK_KINDS:
-        msg = f"Task {task.name!r} has unknown kind {task.kind!r}; choices: {sorted(TASK_KINDS)}"
+    if task_type.task_type not in TASK_TYPES:
+        msg = f"Task {task_type.name!r} has unknown task {task_type.task_type!r}; choices: {sorted(TASK_TYPES)}"
         raise ValueError(msg)
     per_cat = BENCHMARK_TASKS.setdefault(category, {})
-    per_kind = per_cat.setdefault(task.kind, [])
-    if any(t.name == task.name for t in per_kind):
-        msg = f"Task {task.name!r} already registered in category {category!r}/{task.kind!r}"
+    per = per_cat.setdefault(task_type.task_type, [])
+    if any(t.name == task_type.name for t in per):
+        msg = f"Task {task_type.name!r} already registered in category {category!r}/{task_type.task_type!r}"
         raise ValueError(msg)
-    per_kind.append(task)
+    per.append(task_type)
 
 
 def unregister_task(category: str, name: str) -> Task | None:
     """Remove a previously registered task; returns it, or ``None`` if absent."""
     per_cat = BENCHMARK_TASKS.get(category, {})
-    for kind_tasks in per_cat.values():
-        for i, t in enumerate(kind_tasks):
+    for task_tasks in per_cat.values():
+        for i, t in enumerate(task_tasks):
             if t.name == name:
-                return kind_tasks.pop(i)
+                return task_tasks.pop(i)
     return None
 
 
@@ -569,7 +569,7 @@ def _final_metric(history: Mapping[str, list[float]]) -> tuple[str, float]:
 
 
 def _run_task(
-    task: Task,
+    task_type: Task,
     ds: Any,
     spec: ModelSpec,
     hidden: int,
@@ -577,22 +577,22 @@ def _run_task(
     verbose: bool = False,
     device: torch.device | str | None = "auto",
 ) -> dict[str, list[float]]:
-    if task.kind == "node_cls":
+    if task_type.task_type == "node_cls":
         data = ds[0]
-        model = spec.build(ds.num_features, hidden, ds.num_classes, kind="node_cls")
+        model = spec.build(ds.num_features, hidden, ds.num_classes, task_type="node_cls")
         return train_node_classification(model, data, epochs=epochs, verbose=verbose, device=device)
 
-    if task.kind == "graph_cls":
+    if task_type.task_type == "graph_cls":
         shuffled = ds.shuffle()
         split = int(0.8 * len(shuffled))
         train_loader = DataLoader(shuffled[:split], batch_size=32, shuffle=True)
         val_loader = DataLoader(shuffled[split:], batch_size=32)
-        model = spec.build(shuffled.num_features, hidden, shuffled.num_classes, kind="graph_cls")
+        model = spec.build(shuffled.num_features, hidden, shuffled.num_classes, task_type="graph_cls")
         return train_graph_classification(
             model, train_loader, val_loader, epochs=epochs, verbose=verbose, device=device
         )
 
-    if task.kind == "graph_reg":
+    if task_type.task_type == "graph_reg":
         # Loader may return either a single dataset (used for both train and
         # held-out -- e.g. synthetic tasks with no canonical split) or a
         # ``(train_ds, val_ds)`` tuple (real benchmarks like ZINC).
@@ -602,7 +602,7 @@ def _run_task(
             train_ds = val_ds = ds
         train_loader = DataLoader(train_ds, batch_size=64, shuffle=True)
         val_loader = DataLoader(val_ds, batch_size=64)
-        inner = spec.build(hidden, hidden, 1, kind="graph_reg")
+        inner = spec.build(hidden, hidden, 1, task_type="graph_reg")
 
         class _AtomEmbed(torch.nn.Module):
             def __init__(self, num_atoms: int = 32) -> None:
@@ -623,7 +623,7 @@ def _run_task(
             _AtomEmbed(), train_loader, val_loader, epochs=epochs, verbose=verbose, device=device
         )
 
-    if task.kind == "link_pred":
+    if task_type.task_type == "link_pred":
         import math
 
         from torch_geometric.transforms import RandomLinkSplit
@@ -659,8 +659,8 @@ def _run_task(
                 data = _fabricate_log_degree_features(data, data.train_edge_index)
 
             num_relations = ds.num_relations if hasattr(ds, "num_relations") else int(data.edge_type.max()) + 1
-            built = spec.build(data.num_features, hidden, hidden, kind="link_pred")
-            # spec.build returns a LinkPredWrapper for kind="link_pred"; unwrap it
+            built = spec.build(data.num_features, hidden, hidden, task_type="link_pred")
+            # spec.build returns a LinkPredWrapper for task_type="link_pred"; unwrap it
             # so RelationalLinkPredWrapper can drive the bare encoder directly
             # (otherwise its forward expects data.edge_label_index).
             from typing import cast
@@ -714,19 +714,19 @@ def _run_task(
             val_data.x = train_data.x
             test_data = test_data.clone()
             test_data.x = train_data.x
-        # ``spec.build(kind="link_pred")`` returns a LinkPredWrapper, which
+        # ``spec.build(task_type="link_pred")`` returns a LinkPredWrapper, which
         # satisfies the ``_LinkPredLike`` protocol of the trainer; mypy
         # only sees the declared ``Module`` return so we narrow here.
         from typing import cast as _cast
 
         from graphnetz.training import _LinkPredLike
 
-        lp_model = _cast(_LinkPredLike, spec.build(train_data.num_features, hidden, hidden, kind="link_pred"))
+        lp_model = _cast(_LinkPredLike, spec.build(train_data.num_features, hidden, hidden, task_type="link_pred"))
         return train_link_prediction(
             lp_model, train_data, val_data, test_data, epochs=epochs, verbose=verbose, device=device
         )
 
-    msg = f"Unknown task kind: {task.kind}"
+    msg = f"Unknown task task_type: {task_type.task_type}"
     raise ValueError(msg)
 
 
@@ -791,8 +791,8 @@ class BenchmarkReport:
     def __len__(self) -> int:
         return len(self.histories)
 
-    def __getitem__(self, task: str) -> dict[str, dict[str, list[float]]]:
-        per_task = self.histories[task]
+    def __getitem__(self, task_type: str) -> dict[str, dict[str, list[float]]]:
+        per_task = self.histories[task_type]
         return {model: per_task[model][0] for model in per_task}
 
     def items(self):
@@ -1742,21 +1742,21 @@ def run_benchmark(
     hidden_channels: int = 64,
     epochs: int | None = None,
     only: list[str] | None = None,
-    kind: str | None = None,
     verbose: bool = True,
     seeds: int | Iterable[int] | None = None,
     seed: int | None = None,
+    task_type: str | None = None,
     tasks: Iterable[Task] | None = None,
     device: torch.device | str | None = "auto",
 ) -> BenchmarkReport:
     """Run a benchmark across one or more (model, task, seed) combinations.
 
-    Two ways to choose tasks:
+    Two ways to choose task_dict
 
     1. **By category** (default) -- tasks come from
        :data:`BENCHMARK_TASKS` indexed as
-       ``[category][task_kind] -> list[Task]``. Pass ``category="social"``
-       (etc.) and optionally restrict with ``kind=`` and ``only=``.
+       ``[category][task_type] -> list[Task]``. Pass ``category="social"``
+       (etc.) and optionally restrict with ``task_type`` and ``only=``.
     2. **Ad-hoc** -- pass ``tasks=[Task(...), ...]`` to bypass the registry
        entirely. Useful for benchmarking custom datasets without mutating
        global state. ``category`` then defaults to ``"custom"`` and is used
@@ -1769,8 +1769,8 @@ def run_benchmark(
     if models is None:
         msg = "run_benchmark requires `models` (a class, dict, or ModelSpec)"
         raise ValueError(msg)
-    if kind is not None and kind not in TASK_KINDS:
-        msg = f"Unknown task kind {kind!r}. Choices: {sorted(TASK_KINDS)}"
+    if task_type is not None and task_type not in TASK_TYPES:
+        msg = f"Unknown task type {task_type!r}. Choices: {sorted(TASK_TYPES)}"
         raise ValueError(msg)
     if not isinstance(models, dict):
         spec = _spec_from(models)
@@ -1785,11 +1785,11 @@ def run_benchmark(
             if not isinstance(t, Task):
                 msg = f"`tasks` must contain Task instances, got {type(t).__name__}"
                 raise TypeError(msg)
-            if t.kind not in TASK_KINDS:
-                msg = f"Task {t.name!r} has unknown kind {t.kind!r}; choices: {sorted(TASK_KINDS)}"
+            if t.task_type not in TASK_TYPES:
+                msg = f"Task {t.name!r} has unknown task type {t.task_type!r}; choices: {sorted(TASK_TYPES)}"
                 raise ValueError(msg)
-        if kind is not None:
-            task_list = [t for t in task_list if t.kind == kind]
+        if task_type is not None:
+            task_list = [t for t in task_list if t.task_type == task_type]
         if category is None:
             category = "custom"
     else:
@@ -1799,13 +1799,13 @@ def run_benchmark(
         if category not in BENCHMARK_TASKS:
             msg = f"Unknown category {category!r}. Choices: {sorted(BENCHMARK_TASKS)}"
             raise KeyError(msg)
-        task_list = iter_benchmark_tasks(category=category, kind=kind)
+        task_list = iter_benchmark_tasks(category=category, task_type=task_type)
     if only is not None:
         task_list = [t for t in task_list if t.name in only]
     tasks = task_list  # the loop below treats this as the working list
 
     histories: dict[str, dict[str, list[dict[str, list[float]]]]] = {}
-    total_combinations = sum(1 for spec in resolved.values() for task in tasks if task.kind in spec.kinds) * len(
+    total_combinations = sum(1 for spec in resolved.values() for task in tasks if task.task_type in spec.task_type) * len(
         seed_list
     )
     overall_pbar = tqdm(
@@ -1825,7 +1825,7 @@ def run_benchmark(
         ds_cache: Any = None  # for seed-agnostic loaders, load once
         histories[task.name] = {}
         for model_name, spec in resolved.items():
-            if task.kind not in spec.kinds:
+            if task.task_type not in spec.task_type:
                 continue
             histories[task.name][model_name] = []
             for s in seed_list:
@@ -1854,7 +1854,7 @@ def run_benchmark(
 
     config = {
         "category": category,
-        "kind": kind,
+        "task": task,
         "hidden_channels": hidden_channels,
         "epochs": epochs,
         "only": only,
@@ -1902,7 +1902,7 @@ def plot_benchmark(
 
 __all__ = [
     "BENCHMARK_TASKS",
-    "TASK_KINDS",
+    "TASK_TYPES",
     "BenchmarkReport",
     "ModelSpec",
     "Task",

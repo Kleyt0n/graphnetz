@@ -1,10 +1,9 @@
-"""Dataset registry, organized by research category and task kind.
+"""Dataset registry, organized by research category and task.
 
 Each category exposes thin loader functions that return a ``torch_geometric``
 dataset (PyG built-in or :class:`~graphnetz.datasets.Netz`).  The
-:data:`LOADER_REGISTRY` table maps every loader to its category and the task
-kinds it can serve, mirroring the structure used by
-:data:`graphnetz.benchmark.BENCHMARK_TASKS` (``[category][kind] -> [...]``).
+:data:`LOADER_REGISTRY` table maps every loader to its category and the task it can serve, mirroring the structure used by
+:data:`graphnetz.benchmark.BENCHMARK_TASKS` (``[category][task_type] -> [...]``).
 
 Categories
 ----------
@@ -21,11 +20,11 @@ Categories
 - ``physics``: QM9, ZINC, Ising lattice.
 - ``security``: terrorist association networks, MalNet-Tiny.
 
-Task kinds
+Tasks
 ----------
 ``node_cls``, ``graph_cls``, ``graph_reg``, ``link_pred``. A loader may
-serve more than one kind (e.g. ``cora`` is used for both ``node_cls`` and
-``link_pred``). Deep Graph Infomax is *not* a task kind: it is a
+serve more than one task type (e.g. ``cora`` is used for both ``node_cls`` and
+``link_pred``). Deep Graph Infomax is *not* a task: it is a
 self-supervised training objective whose metric is its own loss, so the
 benchmark routes unlabelled graphs through ``link_pred`` (a real held-out
 edge split with an AUC metric) instead. ``train_dgi`` and the
@@ -70,7 +69,7 @@ CATEGORIES = {
 }
 
 
-# Source-of-truth taxonomy: category -> task kind -> [(loader_name, callable)].
+# Source-of-truth taxonomy: category -> task -> [(loader_name, callable)].
 # The benchmark dispatcher curates a subset of these; users can also load any
 # loader directly via the category module.
 LOADER_REGISTRY: dict[str, dict[str, list[tuple[str, object]]]] = {
@@ -211,19 +210,19 @@ if _HAS_OGB:
 
 def list_datasets(
     category: str | None = None,
-    task_kind: str | None = None,
+    task: str | None = None,
 ) -> dict[str, dict[str, list[str]]]:
-    """Return loader names organized by category and task kind.
+    """Return loader names organized by category and task.
 
-    Output shape: ``{category: {kind: [loader_name, ...]}}``. Pass
-    ``category`` and/or ``task_kind`` to restrict the view.
+    Output shape: ``{category: {task_type: [loader_name, ...]}}``. Pass
+    ``category`` and/or ``task`` to restrict the view.
     """
     cats = [category] if category is not None else list(LOADER_REGISTRY)
     out: dict[str, dict[str, list[str]]] = {}
     for c in cats:
         per_cat = LOADER_REGISTRY.get(c, {})
-        kinds = [task_kind] if task_kind is not None else list(per_cat)
-        out[c] = {k: [name for name, _ in per_cat.get(k, [])] for k in kinds if k in per_cat}
+        tasks = [task] if task is not None else list(per_cat)
+        out[c] = {k: [name for name, _ in per_cat.get(k, [])] for k in tasks if k in per_cat}
     return out
 
 

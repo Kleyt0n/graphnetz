@@ -58,7 +58,7 @@ def test_benchmark_registry() -> None:
     for per_cat in BENCHMARK_TASKS.values():
         for task_list in per_cat.values():
             for task in task_list:
-                assert task.kind in {"node_cls", "graph_cls", "graph_reg", "link_pred"}
+                assert task.task_type in {"node_cls", "graph_cls", "graph_reg", "link_pred"}
                 assert callable(task.loader)
 
 

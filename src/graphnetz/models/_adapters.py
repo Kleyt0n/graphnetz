@@ -1,8 +1,8 @@
-"""Task-kind adapters that turn any node-level encoder into a graph-level
+"""Task-type adapters that turn any node-level encoder into a graph-level
 classifier/regressor or a Deep Graph Infomax model.
 
 This is the glue that lets GCN, GAT, GraphSAGE, and the Graph Transformer
-plug into every benchmark task kind in the library, not just node
+plug into every benchmark task in the library, not just node
 classification.
 """
 
