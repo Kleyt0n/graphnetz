@@ -11,9 +11,6 @@ requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENCE.txt"]
 keywords = ["graph-neural-networks", "network-science", "benchmark"]
-authors = [
-  { name = "Kleyton da Costa", email = "kleyton.vsc@gmail.com" },
-]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
