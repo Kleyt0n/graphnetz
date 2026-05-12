@@ -9,7 +9,7 @@
   <a href="https://graphnetz.readthedocs.io/en/latest/"><img alt="Docs" src="https://img.shields.io/badge/passing-docs-22333B?style=flat-square&labelColor=EAE0D5"></a>
   <a href="https://www.python.org/downloads/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-22333B?style=flat-square&labelColor=EAE0D5"></a>
   <a href="LICENCE.txt"><img alt="License" src="https://img.shields.io/badge/license-MIT-22333B?style=flat-square&labelColor=EAE0D5"></a>
-  <a href="https://arxiv.org/"><img alt="Paper" src="https://img.shields.io/badge/paper-PDF-22333B?style=flat-square&labelColor=EAE0D5"></a>
+  <a href="https://arxiv.org/pdf/2605.09099"><img alt="Paper" src="https://img.shields.io/badge/paper-PDF-22333B?style=flat-square&labelColor=EAE0D5"></a>
 </p>
 
 ---
