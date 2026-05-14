@@ -211,12 +211,14 @@ uv run ruff check
 If GraphNetz is useful in your work, please cite the accompanying paper:
 
 ```bibtex
-@article{dacosta2026graphnetz,
-  title   = {GraphNetz: Statistical Benchmarking of Graph Neural Networks with Paired Tests and Rank Aggregation},
-  author  = {da Costa, Kleyton and Modenesi, Bernardo},
-  journal = {arXiv preprint},
-  year    = {2026},
-  url = {}
+@misc{dacosta2026graphnetz,
+  title={GraphNetz: Statistical Benchmarking of Graph Neural Networks with Paired Tests and Rank Aggregation}, 
+  author={Kleyton da Costa and Bernardo Modenesi},
+  year={2026},
+  eprint={2605.09099},
+  archivePrefix={arXiv},
+  primaryClass={cs.CE},
+  url={https://arxiv.org/abs/2605.09099}, 
 }
 ```
 
