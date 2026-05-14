@@ -194,18 +194,6 @@ Worked examples live under `examples/`:
 - `02_knowledge.ipynb` — relational link prediction on FB15k-237 / WN18-RR
   using the DistMult decoder.
 
-## Reproducing the paper
-
-```bash
-PYTHONPATH=src uv run python paper/experiment.py   # train + cache + figures
-latexmk -pdf paper/main.tex                        # compile PDF
-```
-
-The script trains 5 architectures × 10 seeds across the 10 surviving
-categories, caches the histories under `paper/_cache_*.pkl`, and writes every
-figure (`paper/figures/`) and LaTeX table (`paper/tables/`) referenced by
-`paper/main.tex`. Total runtime on a recent laptop CPU is under 30 minutes.
-
 ## Contributing
 
 Pull requests welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first — the
