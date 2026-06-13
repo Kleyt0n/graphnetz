@@ -104,27 +104,27 @@ html_title = "GraphNetz"
 html_favicon = "_static/favicon.svg"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_logo = "_static/logo.svg"
+html_logo = ""#"_static/logo.svg"
 
 html_theme_options = {
     "sidebar_hide_name": False,
     "navigation_with_keys": True,
     "top_of_page_buttons": ["view", "edit"],
-    "source_repository": "https://github.com/quant-sci/graphnetz",
+    "source_repository": "https://github.com/Kleyt0n/graphnetz",
     "source_branch": "main",
     "source_directory": "docs/",
     "light_css_variables": {
-        "color-brand-primary": "#4A90B8",
-        "color-brand-content": "#4A90B8",
+        "color-brand-primary": "#0466c8",
+        "color-brand-content": "#0466c8",
     },
     "dark_css_variables": {
-        "color-brand-primary": "#7FB3D5",
-        "color-brand-content": "#7FB3D5",
+        "color-brand-primary": "#979dac",
+        "color-brand-content": "#979dac",
     },
     "footer_icons": [
         {
             "name": "GitHub",
-            "url": "https://github.com/quant-sci/graphnetz",
+            "url": "https://github.com/Kleyt0n/graphnetz",
             "html": "",
             "class": "fa-brands fa-github",
         },

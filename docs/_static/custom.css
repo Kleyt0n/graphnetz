@@ -3,11 +3,33 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --gn-ink:    #22333B;
-  --gn-accent: #5E503F;
-  --gn-khaki:  #C6AC8F;
-  --gn-cream:  #EAE0D5;
-  --gn-blue:   #4A90B8;
+  --gn-ink:    #001233;
+  --gn-accent: #0353a4;
+  --gn-khaki:  #7d8597;
+  --gn-cream:  #e8ecf2;
+  --gn-blue:   #0466c8;
+}
+
+/* Sidebar logo */
+.sidebar-logo {
+  max-width: 40%;
+}
+
+/* Justified body text. Limited to prose paragraphs in the main article —
+   admonitions, tables, figure captions, and list-dense pages stay
+   left-aligned where justification would look ragged in narrow boxes. */
+article p {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+article .admonition p,
+article table p,
+article figcaption {
+  text-align: left;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 /* Index-page critical-difference figure */
@@ -38,7 +60,7 @@ figure.gn-cd figcaption {
   font-weight: 600;
   background: var(--gn-cream);
   color: var(--gn-ink);
-  border: 1px solid #ddd3c2;
+  border: 1px solid #c2cad6;
   border-radius: 999px;
   margin: 0 0.1em;
 }

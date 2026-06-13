@@ -23,7 +23,7 @@ loaders and architectures are welcome; new evaluation shortcuts are not.
 ## Quick development loop
 
 ```bash
-git clone https://github.com/quant-sci/graphnetz
+git clone https://github.com/Kleyt0n/graphnetz
 cd graphnetz
 uv sync --group dev
 uv run pytest          # smoke tests
@@ -79,7 +79,7 @@ Adding a new task (e.g. `node_reg`, `temporal`) is a four-step change:
 4. Extend `_run_task` in `benchmark.py` with the dispatch branch.
 
 Then document the new task in [Dataset taxonomy →
-Tasks](datasets.md#task-type).
+Tasks](datasets.md#tasks).
 
 ## Adding a statistical test
 

@@ -1,6 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 96" width="460" height="96" role="img" aria-label="GraphNetz">
   <title>GraphNetz</title>
-  <rect x="0" y="0" width="460" height="96" fill="#FFFFFF"/>
+  <!-- Transparent background; colours adapt to the viewer's colour scheme. -->
+  <style>
+    .gn-ink   { fill: #001233; }
+    .gn-line  { stroke: #001233; }
+    .gn-hub   { fill: #0466c8; }
+    @media (prefers-color-scheme: dark) {
+      .gn-ink  { fill: #e8ecf2; }
+      .gn-line { stroke: #e8ecf2; }
+    }
+  </style>
   <!-- Mark: 6+1 hexagonal graph, sized so its bounding height (2*r = 68)
        equals the title font-size. Vertical translate=46 is calibrated to
        the *real* rendered text bounds in Helvetica/Arial (cap-top ~y=15,
@@ -8,13 +17,13 @@
        the same vertical centre. The pair is also centred horizontally
        within the 460-wide viewBox (measured ink extent ~25..435). -->
   <g transform="translate(58, 46)">
-    <g stroke="#22333B" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <g class="gn-line" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
       <line x1="0" y1="-34" x2="0" y2="34"/>
       <line x1="-29.44" y1="-17" x2="29.44" y2="17"/>
       <line x1="-29.44" y1="17" x2="29.44" y2="-17"/>
       <polygon points="0,-34 29.44,-17 29.44,17 0,34 -29.44,17 -29.44,-17"/>
     </g>
-    <g fill="#22333B">
+    <g class="gn-ink">
       <circle cx="0" cy="-34" r="3.27"/>
       <circle cx="29.44" cy="-17" r="3.27"/>
       <circle cx="29.44" cy="17" r="3.27"/>
@@ -22,10 +31,10 @@
       <circle cx="-29.44" cy="17" r="3.27"/>
       <circle cx="-29.44" cy="-17" r="3.27"/>
     </g>
-    <circle cx="0" cy="0" r="4.3" fill="#FFFFFF" stroke="#22333B" stroke-width="2"/>
+    <circle cx="0" cy="0" r="4.6" class="gn-hub"/>
   </g>
   <!-- Wordmark -->
   <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
-    <text x="108" y="65" font-size="68" font-weight="600" fill="#22333B" letter-spacing="-1.5">GraphNetz</text>
+    <text x="108" y="65" font-size="68" font-weight="600" class="gn-ink" letter-spacing="-1.5">GraphNetz</text>
   </g>
 </svg>
