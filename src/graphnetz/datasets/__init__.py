@@ -67,6 +67,7 @@ CATEGORIES = {
     "physics": physics,
     "security": security,
 }
+"""Mapping of category name to the dataset module that implements it."""
 
 
 # Source-of-truth taxonomy: category -> task -> [(loader_name, callable)].

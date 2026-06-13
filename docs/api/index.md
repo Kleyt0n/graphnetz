@@ -38,7 +38,7 @@ Importable directly from `graphnetz`:
 .. autosummary::
    :nosignatures:
 
-   CATEGORIES
+   ~datasets.CATEGORIES
    Netz
    download_all_networks_netz
    list_datasets
@@ -48,7 +48,7 @@ Importable directly from `graphnetz`:
 .. autosummary::
    :nosignatures:
 
-   BENCHMARK_TASKS
+   ~benchmark.BENCHMARK_TASKS
    BenchmarkReport
    ModelSpec
    Task

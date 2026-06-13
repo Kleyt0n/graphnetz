@@ -22,7 +22,7 @@ honesty, and clarity* — in that order.
 ## Quick development loop
 
 ```bash
-git clone https://github.com/quant-sci/graphnetz
+git clone https://github.com/Kleyt0n/graphnetz
 cd graphnetz
 uv sync --group dev          # install + dev dependencies
 uv run pytest                # smoke tests

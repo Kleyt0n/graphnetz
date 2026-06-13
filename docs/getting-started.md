@@ -15,7 +15,7 @@ pip install graphnetz
 For local development, clone the repo and use the `dev` group:
 
 ```bash
-git clone https://github.com/quant-sci/graphnetz
+git clone https://github.com/Kleyt0n/graphnetz
 cd graphnetz
 uv sync --group dev
 ```

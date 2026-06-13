@@ -39,14 +39,36 @@ def _histories():
 def _save_light(out: Path) -> None:
     report = BenchmarkReport(seeds=(0, 1, 2, 3, 4), histories=_histories())
     fig, _ = report.plot_critical_difference(alpha=0.05)
-    fig.savefig(out, dpi=300, bbox_inches="tight", pad_inches=0.05)
+    fig.savefig(out, dpi=600, bbox_inches="tight", pad_inches=0.05)
     plt.close(fig)
 
 
 def _recolor_for_dark(fig: plt.Figure) -> None:
-    """Walk the figure and swap dark on light for cream on dark."""
-    fg = "#EAE0D5"
-    muted = "#aaa49a"
+    """Walk the figure and swap dark-on-light for light-on-dark."""
+    fg = "#e8ecf2"
+    muted = "#979dac"
+
+    # Near-black ink ("black", "0.15", legacy palette ink) -> foreground.
+    ink = {"#000000", "#0a0908", "#1a1a1a", "#262626", "#22333b", "#001233"}
+    # Mid greys ("0.3".."0.55": captions, connectors, Friedman note) -> muted.
+    grey = {"#4c4c4c", "#4d4d4d", "#666666", "#7f7f7f", "#808080", "#8c8c8c"}
+    # Dark palette accents are illegible on a dark page; swap each for a
+    # lighter tint of the same hue so model identity is preserved.
+    accent = {
+        "#001845": "#6b96d6",
+        "#002855": "#6b96d6",
+        "#023e7d": "#5a8fd9",
+        "#0353a4": "#4d94ff",
+        "#33415c": "#8a9bbd",
+        "#5c677d": "#a6b0c3",
+    }
+
+    def _swap(current: str) -> str | None:
+        if current in ink:
+            return fg
+        if current in grey:
+            return muted
+        return accent.get(current)
 
     # Transparent canvas so the surrounding page colour (whatever Furo's
     # current --color-background-primary happens to be) shows through.
@@ -60,21 +82,13 @@ def _recolor_for_dark(fig: plt.Figure) -> None:
         ax.yaxis.label.set_color(fg)
         ax.title.set_color(fg)
         for text in ax.texts:
-            current = mpl.colors.to_hex(text.get_color()).lower()
-            # Re-color labels: keep the per-model accent colors from the
-            # original cycle, swap any near-black text to the foreground
-            # cream, swap any near-grey text (Friedman header, axis caption)
-            # to the muted cream.
-            if current in {"#22333b", "#0a0908", "#000000"}:
-                text.set_color(fg)
-            elif current in {"#666666", "#7f7f7f", "#808080"}:
-                text.set_color(muted)
+            new = _swap(mpl.colors.to_hex(text.get_color()).lower())
+            if new is not None:
+                text.set_color(new)
         for line in ax.lines:
-            current = mpl.colors.to_hex(line.get_color()).lower()
-            if current in {"#22333b", "#0a0908", "#000000"}:
-                line.set_color(fg)
-            elif current in {"#666666", "#7f7f7f", "#808080"}:
-                line.set_color(muted)
+            new = _swap(mpl.colors.to_hex(line.get_color()).lower())
+            if new is not None:
+                line.set_color(new)
 
 
 def _save_dark(out: Path) -> None:
@@ -83,7 +97,7 @@ def _save_dark(out: Path) -> None:
     _recolor_for_dark(fig)
     fig.savefig(
         out,
-        dpi=300,
+        dpi=600,
         bbox_inches="tight",
         pad_inches=0.05,
         transparent=True,
