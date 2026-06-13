@@ -1,15 +1,18 @@
 <p align="center">
-  <img src="assets/logo-banner.svg" alt="GraphNetz" width="460">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-banner-dark.svg">
+    <img src="assets/logo-banner-light.svg" alt="GraphNetz" width="460">
+  </picture>
 </p>
 
 <p align="center"><em>Statistically rigorous GNN benchmarking</em></p>
 
 <p align="center">
-  <a href="https://github.com/quant-sci/graphnetz/actions"><img alt="Build" src="https://img.shields.io/badge/build-passing-22333B?style=flat-square&labelColor=EAE0D5"></a>
-  <a href="https://graphnetz.readthedocs.io/en/latest/"><img alt="Docs" src="https://img.shields.io/badge/passing-docs-22333B?style=flat-square&labelColor=EAE0D5"></a>
-  <a href="https://www.python.org/downloads/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-22333B?style=flat-square&labelColor=EAE0D5"></a>
-  <a href="LICENCE.txt"><img alt="License" src="https://img.shields.io/badge/license-MIT-22333B?style=flat-square&labelColor=EAE0D5"></a>
-  <a href="https://arxiv.org/pdf/2605.09099"><img alt="Paper" src="https://img.shields.io/badge/paper-PDF-22333B?style=flat-square&labelColor=EAE0D5"></a>
+  <a href="https://github.com/Kleyt0n/graphnetz/actions"><img alt="Build" src="https://img.shields.io/badge/build-passing-001233?style=flat-square&labelColor=979dac"></a>
+  <a href="https://graphnetz.readthedocs.io/en/latest/"><img alt="Docs" src="https://img.shields.io/badge/passing-docs-001233?style=flat-square&labelColor=979dac"></a>
+  <a href="https://www.python.org/downloads/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-001233?style=flat-square&labelColor=979dac"></a>
+  <a href="LICENCE.txt"><img alt="License" src="https://img.shields.io/badge/license-MIT-001233?style=flat-square&labelColor=979dac"></a>
+  <a href="https://arxiv.org/pdf/2605.09099"><img alt="Paper" src="https://img.shields.io/badge/paper-PDF-001233?style=flat-square&labelColor=979dac"></a>
 </p>
 
 ---
@@ -42,7 +45,7 @@ pip install graphnetz
 For local development:
 
 ```bash
-git clone https://github.com/quant-sci/graphnetz
+git clone https://github.com/Kleyt0n/graphnetz
 cd graphnetz
 uv sync --group dev
 ```

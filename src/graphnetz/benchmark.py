@@ -338,6 +338,7 @@ BENCHMARK_TASKS: dict[str, dict[str, list[Task]]] = {
         ],
     },
 }
+"""Curated benchmark taxonomy: ``category -> task_type -> [Task, ...]``."""
 
 if _HAS_OGB:
     # OGB tasks live in the domain modules; we only register them as
@@ -1081,12 +1082,14 @@ class BenchmarkReport:
                 arr = np.asarray(vals, dtype=float)
                 values[label][model] = float(arr.mean())
                 errors[label][model] = self._ci_half(arr, ci)
+        from graphnetz.plotting import pretty_metric
+
         return plot_grouped_bars(
             values,
             errors=errors,
             ax=ax,
             title=title,
-            ylabel=ylabel or self.metric_name(),
+            ylabel=ylabel or pretty_metric(self.metric_name()),
             annotate=annotate,
         )
 
@@ -1113,7 +1116,7 @@ class BenchmarkReport:
 
         ``band=True`` shades alternating task rows (banded reading aid).
         """
-        from graphnetz.plotting import COLUMN_INCHES
+        from graphnetz.plotting import COLUMN_INCHES, pretty_metric
 
         set_plot_style()
         finals = self.final_metrics()
@@ -1198,9 +1201,11 @@ class BenchmarkReport:
         ax.set_yticks(range(n_tasks))
         ax.set_yticklabels([pretty.get(t, t) for t in tasks])
         ax.set_ylim(n_tasks - 0.5, -0.5)
-        ax.set_xlabel(xlabel or metric)
+        ax.tick_params(axis="y", which="both", length=0)
+        ax.tick_params(axis="y", which="minor", left=False)
+        ax.set_xlabel(xlabel or pretty_metric(metric))
         ax.set_axisbelow(True)
-        ax.xaxis.grid(True, linewidth=0.3, alpha=0.4, zorder=1)
+        ax.xaxis.grid(True, zorder=1)
         ax.legend(
             loc="lower center",
             bbox_to_anchor=(0.5, 1.02),
@@ -1279,8 +1284,8 @@ class BenchmarkReport:
         cols = max(1, min(max_cols, n_tasks))
         rows = (n_tasks + cols - 1) // cols
         fig_w = COLUMN_INCHES["double"] if cols > 1 else COLUMN_INCHES["single"]
-        cell = max(0.42, 1.4 / max_models)
-        fig_h = (cell * max_models + 1.4) * rows
+        cell = max(0.55, 1.8 / max_models)
+        fig_h = (cell * max_models + 1.6) * rows
         fig, axes_obj = plt.subplots(rows, cols, figsize=(fig_w, fig_h), squeeze=False)
 
         diff_max = max(1e-9, df["mean_diff"].abs().max() if not df.empty else 1.0)
@@ -1311,8 +1316,20 @@ class BenchmarkReport:
             lower = np.where(mask_lower, mat, np.nan)
             upper = np.where(mask_upper, mat, np.nan)
 
-            ax.imshow(lower, cmap="Greys", vmin=0.0, vmax=3.0, aspect="equal")
+            ax.imshow(lower, cmap="Blues", vmin=0.0, vmax=3.0, aspect="equal")
             ax.imshow(upper, cmap="RdBu_r", norm=norm, aspect="equal")
+            # Neutral diagonal + white separators so cells read as a grid.
+            ax.imshow(
+                np.where(np.eye(n, dtype=bool), 0.35, np.nan),
+                cmap="Greys",
+                vmin=0.0,
+                vmax=1.0,
+                aspect="equal",
+                alpha=0.4,
+            )
+            ax.set_xticks(np.arange(n + 1) - 0.5, minor=True)
+            ax.set_yticks(np.arange(n + 1) - 0.5, minor=True)
+            ax.grid(which="minor", color="white", linewidth=1.2)
 
             # Annotate cells.
             for i in range(n):
@@ -1334,38 +1351,40 @@ class BenchmarkReport:
                             text += "*"
                         color = "white" if (not np.isnan(p) and -np.log10(max(p, 1e-12)) > 1.5) else "black"
                         weight = "bold" if is_sig else "normal"
-                        ax.text(j, i, text, ha="center", va="center", fontsize=6, color=color, fontweight=weight)
+                        ax.text(j, i, text, ha="center", va="center", fontsize=7.5, color=color, fontweight=weight)
                     elif mask_upper[i, j]:
                         d = mat[i, j]
                         if np.isnan(d):
                             continue
                         color = "white" if abs(d) > 0.6 * diff_max else "black"
-                        ax.text(j, i, f"{d:+.2f}", ha="center", va="center", fontsize=6, color=color)
+                        ax.text(j, i, f"{d:+.2f}", ha="center", va="center", fontsize=7.5, color=color)
 
             ax.set_xticks(range(n))
             ax.set_yticks(range(n))
-            ax.set_xticklabels(models_t, rotation=30, ha="right")
+            ax.set_xticklabels(models_t, rotation=35, ha="right")
             ax.set_yticklabels(models_t)
-            ax.set_xticks([], minor=True)
-            ax.set_yticks([], minor=True)
             ax.tick_params(which="both", length=0)
             for spine in ax.spines.values():
                 spine.set_visible(False)
-            ax.set_title(pretty.get(task, task))
+            ax.set_title(pretty.get(task, task), loc="center")
 
         # Hide unused panels.
         for k in range(n_tasks, rows * cols):
             r, c = divmod(k, cols)
             axes_obj[r, c].axis("off")
 
-        # Caption-style legend strip.
-        fig.suptitle(
-            r"lower: $-\log_{10}(p_{\mathrm{Holm}})$ (darker = more significant, $*$ = $p<\alpha$);"
-            r"   upper: mean difference (row $-$ column, red $>0$, blue $<0$)",
-            y=0.02,
-            fontsize=7,
+        # Caption-style legend strip below the panels.
+        fig.tight_layout(rect=(0, 0.06, 1, 1), h_pad=2.4, w_pad=1.6)
+        fig.text(
+            0.5,
+            0.015,
+            r"Lower triangle: Holm-adjusted $p$ (darker blue = more significant, $*$: $p<\alpha$)."
+            r"  Upper triangle: mean difference, row $-$ column (red $>0$, blue $<0$).",
+            ha="center",
+            va="bottom",
+            fontsize=8.5,
+            color="0.3",
         )
-        fig.tight_layout(rect=(0, 0.05, 1, 1))
         return fig, axes_obj
 
     def _plot_pairwise_list(
@@ -1390,54 +1409,72 @@ class BenchmarkReport:
             return fig, ax
 
         pretty = dict(pretty_tasks or {})
-        rows: list[tuple[str, str, str, float, float, bool]] = []
+        # Group comparisons by task so each task reads as a block with a
+        # single bold header instead of repeating the task in every label.
+        by_task: dict[str, list[tuple[str, str, float, float, bool]]] = {}
         for _, row in df.iterrows():
             a = np.asarray(finals[row["task"]][row["model_a"]], dtype=float)
             b = np.asarray(finals[row["task"]][row["model_b"]], dtype=float)
             diff_per_seed = a - b
             mean = float(diff_per_seed.mean())
             half = self._ci_half(diff_per_seed, ci)
-            rows.append(
-                (
-                    pretty.get(row["task"], row["task"]),
-                    row["model_a"],
-                    row["model_b"],
-                    mean,
-                    half,
-                    bool(row["significant"]),
-                )
+            by_task.setdefault(pretty.get(row["task"], row["task"]), []).append(
+                (row["model_a"], row["model_b"], mean, half, bool(row["significant"]))
             )
 
+        n_rows = sum(len(v) for v in by_task.values()) + len(by_task)  # + header rows
         if ax is None:
-            fig, ax = plt.subplots(figsize=(COLUMN_INCHES["single"], 0.34 * len(rows) + 0.6))
+            fig, ax = plt.subplots(figsize=(COLUMN_INCHES["single"] * 1.1, 0.3 * n_rows + 1.0))
         else:
             fig = ax.figure  # type: ignore[assignment]
 
         ytick_positions: list[float] = []
         ytick_labels: list[str] = []
-        for i, (task_label, ma, mb, mean, half, sig) in enumerate(rows):
-            color = NATURE_COLORS[0] if sig else NATURE_COLORS[3]
-            ax.errorbar(
-                mean,
-                i,
-                xerr=[[half], [half]],
-                fmt="o" if sig else "s",
-                color=color,
-                ecolor=color,
-                elinewidth=1.0,
-                capsize=2.0,
-                markersize=4.0 if sig else 3.0,
-            )
-            ytick_positions.append(i)
-            ytick_labels.append(f"{task_label}: {ma} - {mb}")
+        header_positions: list[tuple[float, str]] = []
+        y = 0.0
+        for t_idx, (task_label, comparisons) in enumerate(by_task.items()):
+            header_positions.append((y, task_label))
+            y += 1.0
+            for ma, mb, mean, half, sig in comparisons:
+                color = NATURE_COLORS[0] if sig else NATURE_COLORS[2]
+                ax.errorbar(
+                    mean,
+                    y,
+                    xerr=[[half], [half]],
+                    fmt="o" if sig else "s",
+                    color=color,
+                    ecolor=color,
+                    elinewidth=1.2,
+                    capsize=2.2,
+                    markersize=4.5 if sig else 3.5,
+                )
+                ytick_positions.append(y)
+                ytick_labels.append(f"{ma} vs {mb}")
+                y += 1.0
+            if t_idx < len(by_task) - 1:
+                ax.axhline(y - 0.5, color="0.88", linewidth=0.6)
 
         ax.axvline(0, color="0.4", linewidth=0.6, linestyle="--")
         ax.set_yticks(ytick_positions)
         ax.set_yticklabels(ytick_labels)
-        ax.invert_yaxis()
-        ax.set_xlabel(r"Mean difference (95% CI, paired)")
+        # Bold task headers in the label gutter, aligned with their block.
+        for hy, label in header_positions:
+            ax.text(
+                -0.02,
+                hy,
+                label,
+                transform=ax.get_yaxis_transform(),
+                ha="right",
+                va="center",
+                fontsize=9.5,
+                fontweight="bold",
+            )
+        ax.set_ylim(y - 0.5, -0.5)
+        ax.tick_params(axis="y", which="both", length=0)
+        ax.tick_params(axis="y", which="minor", left=False)
+        ax.set_xlabel(rf"Mean difference ({int(ci * 100)}% CI, paired)")
         ax.set_axisbelow(True)
-        ax.xaxis.grid(True, linewidth=0.3, alpha=0.4)
+        ax.xaxis.grid(True)
 
         legend_handles = [
             Line2D(
@@ -1446,10 +1483,10 @@ class BenchmarkReport:
                 marker="o",
                 color=NATURE_COLORS[0],
                 linestyle="",
-                markersize=4.0,
+                markersize=4.5,
                 label=rf"$p_{{\mathrm{{Holm}}}} < {alpha}$",
             ),
-            Line2D([0], [0], marker="s", color=NATURE_COLORS[3], linestyle="", markersize=3.0, label="not significant"),
+            Line2D([0], [0], marker="s", color=NATURE_COLORS[2], linestyle="", markersize=3.5, label="not significant"),
         ]
         ax.legend(
             handles=legend_handles,
@@ -1581,15 +1618,16 @@ class BenchmarkReport:
                 ly = label_y_top + (idx - half) * label_y_step
             ax.plot([r, r], [rank_y, ly], color="0.55", linewidth=0.5, zorder=1)
             ax.plot([r, label_x], [ly, ly], color="0.55", linewidth=0.5, zorder=1)
-            ax.plot([r], [rank_y], marker="o", markersize=3.5, color=color, zorder=2)
+            ax.plot([r], [rank_y], marker="o", markersize=5.0, color=color, zorder=2)
+            # Model name in ink for readability; the rank in muted grey.
             ax.text(
                 label_x + (-0.05 if ha == "right" else 0.05),
                 ly,
                 f"{model} ({r:.2f})",
                 va="center",
                 ha=ha,
-                fontsize=8,
-                color=color,
+                fontsize=9,
+                color="0.15",
             )
 
         # Clique bars below the rank axis (start below the tick labels).
@@ -1661,20 +1699,31 @@ class BenchmarkReport:
         ci: float = 0.95,
         metric_key: str | None = None,
         pretty_tasks: Mapping[str, str] | None = None,
-        ylabel: str = "Test accuracy",
-        legend_loc: str = "lower right",
+        ylabel: str | None = None,
+        max_cols: int = 4,
     ) -> tuple[plt.Figure, np.ndarray]:
-        """Mean ± t-CI learning curves, one panel per task, sharing y-axis."""
+        """Mean ± t-CI learning curves, one panel per task, sharing y-axis.
+
+        Panels wrap into rows of at most ``max_cols`` so individual panels
+        stay readable on benchmarks with many tasks; a single legend is
+        shared by all panels below the figure.
+        """
         set_plot_style()
-        from graphnetz.plotting import COLUMN_INCHES, panel_label
+        from string import ascii_lowercase
+
+        from graphnetz.plotting import COLUMN_INCHES, panel_label, pretty_metric
 
         tasks = list(self.histories)
-        ncols = max(len(tasks), 1)
+        n_tasks = max(len(tasks), 1)
+        ncols = max(1, min(max_cols, n_tasks))
+        nrows = (n_tasks + ncols - 1) // ncols
         width = COLUMN_INCHES["double"]
-        height = width / 2.6
-        fig, axes_obj = plt.subplots(1, ncols, figsize=(width, height), sharey=True)
-        axes = np.atleast_1d(axes_obj)
+        panel_w = width / ncols
+        height = panel_w / 1.3 * nrows + 0.35  # + room for the shared legend
+        fig, axes_obj = plt.subplots(nrows, ncols, figsize=(width, height), sharey=True, squeeze=False)
+        axes = axes_obj.ravel()
         pretty = dict(pretty_tasks or {})
+        resolved_key = metric_key
         for idx, task in enumerate(tasks):
             ax = axes[idx]
             per_task = self.histories[task]
@@ -1683,6 +1732,7 @@ class BenchmarkReport:
                 if not seed_histories:
                     continue
                 key = metric_key or _auto_metric_key(seed_histories[0])
+                resolved_key = resolved_key or key
                 arr = np.array([h[key] for h in seed_histories], dtype=float)
                 mean = arr.mean(axis=0)
                 n = arr.shape[0]
@@ -1693,20 +1743,38 @@ class BenchmarkReport:
                     half = np.zeros_like(mean)
                 epochs_axis = np.arange(1, mean.size + 1)
                 color = NATURE_COLORS[j % len(NATURE_COLORS)]
-                ax.plot(epochs_axis, mean, color=color, label=model, linewidth=1.2)
-                ax.fill_between(epochs_axis, mean - half, mean + half, color=color, alpha=0.2, linewidth=0)
-            ax.set_xlabel("Epoch")
+                ax.plot(epochs_axis, mean, color=color, label=model, linewidth=1.4)
+                ax.fill_between(epochs_axis, mean - half, mean + half, color=color, alpha=0.18, linewidth=0)
+            if idx // ncols == nrows - 1 or idx + ncols >= n_tasks:
+                ax.set_xlabel("Epoch")
             ax.set_title(pretty.get(task, task))
             ax.set_axisbelow(True)
-            ax.yaxis.grid(True, linewidth=0.3, alpha=0.4)
-            if idx == 0:
-                ax.set_ylabel(ylabel)
-                ax.legend(loc=legend_loc, borderaxespad=0.4)
+            ax.yaxis.grid(True)
+            ax.margins(x=0.02)
+            if idx % ncols == 0:
+                ax.set_ylabel(ylabel or pretty_metric(resolved_key or "metric"))
             else:
                 ax.tick_params(labelleft=False)
-            panel_label(ax, "abcdefgh"[idx])
-        fig.tight_layout()
-        return fig, axes
+            if n_tasks > 1:
+                panel_label(ax, ascii_lowercase[idx % 26], x=-0.08 if idx % ncols else -0.18)
+        for idx in range(n_tasks, nrows * ncols):
+            axes[idx].axis("off")
+
+        # One shared legend below all panels instead of crowding panel one.
+        handles, labels = axes[0].get_legend_handles_labels()
+        if handles:
+            fig.legend(
+                handles,
+                labels,
+                loc="lower center",
+                ncol=min(len(labels), 5),
+                frameon=False,
+                handlelength=1.8,
+                columnspacing=1.4,
+                bbox_to_anchor=(0.5, 0.0),
+            )
+        fig.tight_layout(rect=(0, 0.35 / height, 1, 1), h_pad=2.2, w_pad=1.2)
+        return fig, axes_obj if nrows > 1 else np.atleast_1d(axes_obj[0])
 
 
 # --------------------------------------------------------------------------- #

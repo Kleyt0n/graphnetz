@@ -2,14 +2,14 @@
 hide-toc: true
 ---
 
-# GraphNetz
+# Introduction
 
-[![GitHub](https://img.shields.io/github/stars/quant-sci/graphnetz?style=flat-square&logo=github&logoColor=22333B&labelColor=EAE0D5&color=22333B)](https://github.com/quant-sci/graphnetz)
-[![Build](https://img.shields.io/badge/build-passing-22333B?style=flat-square&labelColor=EAE0D5)](https://github.com/quant-sci/graphnetz/actions)
-[![Docs](https://img.shields.io/badge/passing-docs-22333B?style=flat-square&labelColor=EAE0D5)](https://graphnetz.readthedocs.io/en/latest/)
-[![Python](https://img.shields.io/badge/python-3.10%2B-22333B?style=flat-square&labelColor=EAE0D5)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-22333B?style=flat-square&labelColor=EAE0D5)](https://github.com/quant-sci/graphnetz/blob/main/LICENCE.txt)
-[![Paper](https://img.shields.io/badge/paper-PDF-22333B?style=flat-square&labelColor=EAE0D5)](https://arxiv.org/)
+[![GitHub](https://img.shields.io/github/stars/Kleyt0n/graphnetz?style=flat-square&logo=github&logoColor=001233&labelColor=979dac&color=001233)](https://github.com/Kleyt0n/graphnetz)
+[![Build](https://img.shields.io/badge/build-passing-001233?style=flat-square&labelColor=979dac)](https://github.com/Kleyt0n/graphnetz/actions)
+[![Docs](https://img.shields.io/badge/passing-docs-001233?style=flat-square&labelColor=979dac)](https://graphnetz.readthedocs.io/en/latest/)
+[![Python](https://img.shields.io/badge/python-3.10%2B-001233?style=flat-square&labelColor=979dac)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-001233?style=flat-square&labelColor=979dac)](https://github.com/Kleyt0n/graphnetz/blob/main/LICENCE.txt)
+[![Paper](https://img.shields.io/badge/paper-PDF-001233?style=flat-square&labelColor=979dac)](https://arxiv.org/)
 
 **A GNN benchmark whose default output is a statistical report, not a leaderboard.**
 
@@ -101,7 +101,7 @@ same statistical pipeline as the built-ins.
 | **Architectures** | GCN · GAT · GIN · GraphSAGE · GraphTransformer (DGI as a pre-training utility) |
 | **Loaders** | 63 across 10 categories (combinatorial, biology, social, knowledge, infrastructure, finance, computing, vision, physics, security) |
 | **Default report** | per-cell mean ± Student's-*t* CI · Holm-adjusted paired *t* · Demšar/Nemenyi CD |
-| **Source** | [github.com/quant-sci/graphnetz](https://github.com/quant-sci/graphnetz) |
+| **Source** | [github.com/Kleyt0n/graphnetz](https://github.com/Kleyt0n/graphnetz) |
 
 ## Documentation
 
