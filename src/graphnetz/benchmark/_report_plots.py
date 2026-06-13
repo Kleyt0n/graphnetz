@@ -9,7 +9,7 @@ purely to keep the statistics and the figure code in separate modules.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,8 +18,23 @@ from scipy import stats
 from graphnetz.benchmark._stats import _LOWER_IS_BETTER, _auto_metric_key
 from graphnetz.plotting import NATURE_COLORS, plot_grouped_bars, set_plot_style
 
+if TYPE_CHECKING:
+    import pandas as pd
+
 
 class _ReportPlotsMixin:
+    if TYPE_CHECKING:
+        # Provided by :class:`~graphnetz.benchmark._report.BenchmarkReport`,
+        # the only class that mixes this in. Declared type-only so mypy can
+        # check the plot methods without a runtime dependency on the host.
+        seeds: tuple[int, ...]
+        histories: dict[str, dict[str, list[dict[str, list[float]]]]]
+
+        def final_metrics(self, key: str | None = ...) -> dict[str, dict[str, list[float]]]: ...
+        def metric_name(self) -> str: ...
+        def pairwise(self, alpha: float = ..., method: str | None = ...) -> pd.DataFrame: ...
+        def _ci_half(self, values: np.ndarray, ci: float, method: str | None = ...) -> float: ...
+
     # ----- Plotting ----------------------------------------------------------
 
     def plot(
